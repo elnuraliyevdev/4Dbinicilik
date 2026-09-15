@@ -1190,7 +1190,7 @@
             <textarea class="form-control" rows="3" placeholder="Öğrencinin at ile uyumu, denge ve manevra hakimiyeti..." id="trainerFeedbackNote"></textarea>
           </div>
           <button class="btn-gold" style="width:100%;" onclick="submitTrainerFeedback()">
-            ✓ Gelişim Raporunu Kaydet & Veliye WhatsApp Gönder
+            ✓ Gelişim Raporunu Kaydet
           </button>
         </div>
       </div>
