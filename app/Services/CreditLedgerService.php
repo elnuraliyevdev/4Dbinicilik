@@ -115,6 +115,35 @@ class CreditLedgerService
         }
     }
 
+    /**
+     * Admin-initiated direct balance change — manual correction or a package
+     * purchase grant. Always applied to the member's individual balance
+     * (never the family pool; admins adjust a family's pool via a separate
+     * family-scoped call if that's genuinely what's needed).
+     */
+    public function adjustIndividual(User $user, int $delta, string $reason, ?int $createdBy = null, ?string $note = null): CreditTransaction
+    {
+        if ($delta >= 0) {
+            $user->increment('remaining_lessons', $delta);
+            if ($reason === 'package_purchase') {
+                $user->increment('total_lessons', $delta);
+            }
+        } else {
+            $applied = min(abs($delta), $user->remaining_lessons);
+            $user->decrement('remaining_lessons', $applied);
+            $delta = -$applied;
+        }
+
+        return CreditTransaction::create([
+            'user_id' => $user->id,
+            'family_id' => null,
+            'delta' => $delta,
+            'reason' => $reason,
+            'note' => $note,
+            'created_by' => $createdBy,
+        ]);
+    }
+
     private function activeFamilyFor(User $user): ?Family
     {
         $membership = $user->familyMemberships()->with('family')->first();
