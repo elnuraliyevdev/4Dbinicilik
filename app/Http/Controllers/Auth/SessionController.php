@@ -55,9 +55,15 @@ class SessionController extends Controller
     public function trainerOptions(): JsonResponse
     {
         return response()->json([
-            'trainers' => Trainer::query()->where('is_active', true)->with('user:id,name')
+            // whereHas + the null-check both matter: a trainer row whose linked
+            // user was soft-deleted must never 500 this public, unauthenticated,
+            // unconditionally-loaded endpoint — that would take down the entire
+            // login page for every role, not just that one trainer.
+            'trainers' => Trainer::query()->where('is_active', true)->whereHas('user')->with('user:id,name')
                 ->get(['id', 'user_id', 'title'])
-                ->map(fn (Trainer $t) => ['id' => $t->id, 'name' => $t->user->name, 'title' => $t->title]),
+                ->filter(fn (Trainer $t) => $t->user !== null)
+                ->map(fn (Trainer $t) => ['id' => $t->id, 'name' => $t->user->name, 'title' => $t->title])
+                ->values(),
         ]);
     }
 }

@@ -26,7 +26,7 @@ class SeedDemoAccountsCommand extends Command
         $trainerPin = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
         $memberPassword = Str::password(14);
 
-        $admin = User::updateOrCreate(
+        $admin = $this->upsertUser(
             ['email' => 'demo.yonetici@4dbinicilik.local'],
             [
                 'name' => 'Demo Yönetici',
@@ -42,7 +42,7 @@ class SeedDemoAccountsCommand extends Command
             $admin->assignRole('admin');
         }
 
-        $trainerUser = User::updateOrCreate(
+        $trainerUser = $this->upsertUser(
             ['email' => 'demo.antrenor@4dbinicilik.local'],
             [
                 'name' => 'Demo Antrenör',
@@ -61,7 +61,7 @@ class SeedDemoAccountsCommand extends Command
             ['name' => 'Demo Antrenör', 'title' => 'Demo Eğitmen']
         );
 
-        $member = User::updateOrCreate(
+        $member = $this->upsertUser(
             ['phone' => '05550000001'],
             [
                 'name' => 'Demo Üye',
@@ -86,5 +86,28 @@ class SeedDemoAccountsCommand extends Command
         $this->line("MEMBER  | phone: 05550000001 | password: {$memberPassword} | remaining_lessons: 8");
 
         return self::SUCCESS;
+    }
+
+    /**
+     * User's #[Fillable] list doesn't include deleted_at/email_verified_at/
+     * failed_login_attempts/locked_until, so a plain updateOrCreate() silently
+     * drops those — a previously soft-deleted demo row would stay trashed
+     * (and re-running the command would then crash on the unique constraint)
+     * and a previously-locked-out demo row would stay locked. withTrashed()
+     * finds the trashed row; forceFill covers the guarded columns.
+     */
+    private function upsertUser(array $attributes, array $values): User
+    {
+        $user = User::withTrashed()->firstOrNew($attributes);
+        $user->fill($values);
+        $user->forceFill([
+            'deleted_at' => null,
+            'email_verified_at' => $values['email_verified_at'] ?? $user->email_verified_at,
+            'failed_login_attempts' => $values['failed_login_attempts'] ?? 0,
+            'locked_until' => $values['locked_until'] ?? null,
+        ]);
+        $user->save();
+
+        return $user;
     }
 }
