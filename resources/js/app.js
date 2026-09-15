@@ -1128,6 +1128,35 @@ function renderAdminMembersTable() {
     .join('');
 }
 
+function adminExportMembersCSV() {
+  if (!cachedAdminMembers || cachedAdminMembers.length === 0) {
+    showToast('Dışa aktarılacak üye bulunamadı.', 'warning');
+    return;
+  }
+
+  const headers = ['Üye Adı', 'E-posta', 'Telefon', 'Referans Kodu', 'Kalan Ders', 'Toplam Ders', 'Kayıt Tarihi'];
+  const rows = cachedAdminMembers.map((m) => [
+    `"${(m.name || '').replace(/"/g, '""')}"`,
+    `"${(m.email || '').replace(/"/g, '""')}"`,
+    `"${(m.phone || '').replace(/"/g, '""')}"`,
+    `"${(m.ref_code || '').replace(/"/g, '""')}"`,
+    m.remaining_lessons ?? 0,
+    m.total_lessons ?? 0,
+    `"${(m.created_at || new Date().toLocaleDateString('tr-TR')).replace(/"/g, '""')}"`,
+  ]);
+
+  const csvContent = '\uFEFF' + [headers.join(';'), ...rows.map((r) => r.join(';'))].join('\r\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', `4D_Binicilik_Uye_Kutugu_${new Date().toISOString().slice(0, 10)}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  showToast('✓ Üye kütüğü CSV (Excel uyumlu) olarak indirildi!');
+}
+
 async function adminAddCredits(memberId, count) {
   try {
     await API.post(`/admin/members/${memberId}/credits`, { delta: count });
@@ -1553,6 +1582,7 @@ Object.assign(window, {
   togglePackageCategory,
   filterMemberCategory,
   filterMemberStatus,
+  adminExportMembersCSV,
   adminAddCredits,
   adminSendClaimLink,
   sendWhatsAppToMember,
