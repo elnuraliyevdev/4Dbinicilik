@@ -1,0 +1,49 @@
+*.log
+.DS_Store
+.env
+.env.backup
+.env.production
+.phpactor.json
+.phpunit.result.cache
+/.codex
+/.cursor/
+/.idea
+/.nova
+/.phpunit.cache
+/.vscode
+/.zed
+/auth.json
+/node_modules
+/public/build
+/public/fonts-manifest.dev.json
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+/vendor
+_ide_helper.php
+Homestead.json
+Homestead.yaml
+Thumbs.db
+
+# One-time legacy data import (real member/trainer PII) — never committed, see Phase 1 plan
+/storage/legacy-data.json
+/storage/legacy-data*.json
+
+# Pre-rebuild recon/scraping/test artifacts against the original third-party site and
+# early local test scripts — not part of the Laravel app, several contain real captured
+# data (crawl reports, live-state dumps, logged-in screenshots). Kept on disk for
+# reference only, intentionally never entering this repo's git history.
+/angora_deep_crawl_report.json
+/angora_live_state.json
+/angora_landing.png
+/angora_logged_in.png
+/angora_screen__*.png
+/login_screen_verified.png
+/screenshot_parity_*.png
+/crawl_deep_angora.cjs
+/extract_live_state.cjs
+/populate_real_angora_data.cjs
+/sync_full_parity.cjs
+/test_*.cjs
+/vercel.json
