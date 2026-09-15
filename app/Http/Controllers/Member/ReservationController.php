@@ -45,7 +45,21 @@ class ReservationController extends Controller
 
         try {
             $reservation = DB::transaction(function () use ($request, $user, $date, $trainer) {
-                $this->assertSlotIsFree($trainer->id, $date->toDateString(), $request->validated('time'));
+                // Row-level lock on the slot itself serializes concurrent booking
+                // attempts for the same trainer/date/time — the earlier exists()-only
+                // check left a narrow window two simultaneous requests could both pass.
+                $slot = TrainerSlot::firstOrCreate(
+                    ['trainer_id' => $trainer->id, 'date' => $date->toDateString(), 'time' => $request->validated('time')],
+                    ['status' => 'available']
+                );
+                $slot = TrainerSlot::whereKey($slot->id)->lockForUpdate()->firstOrFail();
+
+                if ($slot->status === 'off') {
+                    throw new \RuntimeException('Eğitmen bu saatte müsait değil.');
+                }
+                if ($slot->status === 'busy') {
+                    throw new \RuntimeException('Bu saat az önce başka biri tarafından alındı, lütfen başka bir saat seçin.');
+                }
 
                 $reservation = Reservation::create([
                     'reservation_code' => 'RES-'.Str::upper(Str::random(8)),
@@ -62,10 +76,7 @@ class ReservationController extends Controller
 
                 $this->credits->deductForReservation($user, 1, 'booking', $reservation, $user->id);
 
-                TrainerSlot::updateOrCreate(
-                    ['trainer_id' => $trainer->id, 'date' => $date->toDateString(), 'time' => $request->validated('time')],
-                    ['status' => 'busy', 'reservation_id' => $reservation->id]
-                );
+                $slot->update(['status' => 'busy', 'reservation_id' => $reservation->id]);
 
                 return $reservation;
             });
@@ -162,30 +173,5 @@ class ReservationController extends Controller
     private function authorizeOwnership(Request $request, Reservation $reservation): void
     {
         abort_unless($reservation->user_id === $request->user()->id || $request->user()->role === 'admin', 403);
-    }
-
-    private function assertSlotIsFree(int $trainerId, string $date, string $time): void
-    {
-        $taken = Reservation::query()
-            ->where('trainer_id', $trainerId)
-            ->where('date', $date)
-            ->where('time', $time)
-            ->where('status', 'confirmed')
-            ->exists();
-
-        if ($taken) {
-            throw new \RuntimeException('Bu saat az önce başka biri tarafından alındı, lütfen başka bir saat seçin.');
-        }
-
-        $off = TrainerSlot::query()
-            ->where('trainer_id', $trainerId)
-            ->where('date', $date)
-            ->where('time', $time)
-            ->where('status', 'off')
-            ->exists();
-
-        if ($off) {
-            throw new \RuntimeException('Eğitmen bu saatte müsait değil.');
-        }
     }
 }
