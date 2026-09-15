@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Angora Binicilik Spor Kulübü — Üye & Yönetici Portalı</title>
-  
+  <title>4D Binicilik — Üye & Yönetici Portalı</title>
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+
   <!-- PWA Settings -->
-  <link rel="manifest" href="public/manifest.json">
+  <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#1B3B2F">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Angora Binicilik">
+  <meta name="apple-mobile-web-app-title" content="4D Binicilik">
 
-  <!-- Stylesheet with Cache Buster -->
-  <link rel="stylesheet" href="src/css/style.css?v=5.0">
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
 
   <style>
     /* ==========================================================================
@@ -194,18 +194,18 @@
         <button class="auth-tab-btn active" id="gatewayTabBtn-member" onclick="switchGatewayTab('member')">👤 Üye Girişi</button>
         <button class="auth-tab-btn" id="gatewayTabBtn-admin" onclick="switchGatewayTab('admin')">👑 Yönetici</button>
         <button class="auth-tab-btn" id="gatewayTabBtn-trainer" onclick="switchGatewayTab('trainer')">🎯 Antrenör</button>
-        <button class="auth-tab-btn" id="gatewayTabBtn-demo" onclick="switchGatewayTab('demo')">⚡ Hızlı Demo</button>
       </div>
+      <div class="form-error" id="gatewayFormError" style="display:none; color:#DC2626; font-size:0.85rem; margin-bottom:0.75rem;"></div>
 
       <!-- TAB 1: ÜYE GİRİŞİ -->
       <div class="gateway-sub-panel" id="gatewayPanel-member">
         <div class="form-group">
           <label class="form-label">Telefon Numarası veya Referans Kodu</label>
-          <input type="text" class="form-control" id="gwMemberPhone" placeholder="Örn: 05551234567 veya 087798" value="087798">
+          <input type="text" class="form-control" id="gwMemberPhone" placeholder="Örn: 05551234567 veya referans kodu">
         </div>
         <div class="form-group">
           <label class="form-label">Şifre</label>
-          <input type="password" class="form-control" id="gwMemberPass" placeholder="••••••••" value="elnur123">
+          <input type="password" class="form-control" id="gwMemberPass" placeholder="••••••••">
         </div>
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; font-size:0.8rem;">
           <label style="display:flex; align-items:center; gap:0.35rem; color:var(--text-muted); cursor:pointer;">
@@ -222,15 +222,15 @@
       <div class="gateway-sub-panel" id="gatewayPanel-admin" style="display:none;">
         <div class="form-group">
           <label class="form-label">Yönetici E-Posta / Kullanıcı Adı</label>
-          <input type="text" class="form-control" id="gwAdminUser" placeholder="admin.demo@example.com" value="admin.demo@example.com">
+          <input type="text" class="form-control" id="gwAdminUser" placeholder="yonetici@ornekklup.com">
         </div>
         <div class="form-group">
           <label class="form-label">Yönetici Parolası</label>
-          <input type="password" class="form-control" id="gwAdminPass" placeholder="••••••••" value="demo1234">
+          <input type="password" class="form-control" id="gwAdminPass" placeholder="••••••••">
         </div>
         <div class="form-group">
           <label class="form-label">2-Aşamalı Güvenlik PIN Kodu</label>
-          <input type="password" maxlength="4" class="form-control" id="gwAdminPin" placeholder="4 Haneli PIN (Demo: 1450)" value="1450">
+          <input type="password" maxlength="6" class="form-control" id="gwAdminPin" placeholder="4 Haneli PIN">
         </div>
         <button class="btn-primary" style="width:100%; padding:0.85rem; font-weight:700;" onclick="submitGatewayLogin('admin')">
           👑 Yönetici Masası'na Güvenli Giriş →
@@ -242,59 +242,18 @@
         <div class="form-group">
           <label class="form-label">Eğitmen / Antrenör Seçin</label>
           <select class="form-control" id="gwTrainerSelect">
-            <option value="TR-1" selected>Kağan Doruk (Baş Antrenör — Bugün 11 Ders)</option>
-            <option value="TR-2">Ela Aydemir (Dresaj & Temel Biniş — 6 Ders)</option>
-            <option value="TR-3">Faruk Ateş (Engel Atlama & Safari — 3 Ders)</option>
-            <option value="TR-4">Aslı Yücel (Çocuk & Başlangıç Antrenörü)</option>
+            <option value="">Yükleniyor…</option>
           </select>
         </div>
         <div class="form-group">
           <label class="form-label">Antrenör PIN Kodu</label>
-          <input type="password" class="form-control" id="gwTrainerPass" placeholder="PIN Kodu (Demo: 1234)" value="1234">
+          <input type="password" class="form-control" id="gwTrainerPass" placeholder="PIN Kodu">
         </div>
         <button class="btn-gold" style="width:100%; padding:0.85rem; font-weight:700;" onclick="submitGatewayLogin('trainer')">
           🎯 Antrenör Seans Masasına Gir →
         </button>
       </div>
 
-      <!-- TAB 4: HIZLI DEMO SEÇİCİ -->
-      <div class="gateway-sub-panel" id="gatewayPanel-demo" style="display:none;">
-        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.75rem;">
-          Müşteri ve yönetim sunumunda rolleri tek tıkla canlı deneyimleyin:
-        </p>
-
-        <div class="demo-account-pill" onclick="quickGatewayLogin('member', 'MEM-003')">
-          <div>
-            <div style="font-weight:700; font-size:0.85rem; color:var(--primary-dark);">👤 Demo Üye (Kulüp Üyesi)</div>
-            <div style="font-size:0.75rem; color:var(--text-muted);">Ref: 087798 • 30 Ders Bakiyesi • Safari Randevusu</div>
-          </div>
-          <span class="sec-badge success">Giriş Yap →</span>
-        </div>
-
-        <div class="demo-account-pill" onclick="quickGatewayLogin('admin', 'ADM-001')">
-          <div>
-            <div style="font-weight:700; font-size:0.85rem; color:var(--primary-dark);">👑 Ahmet Yönetici (Süper Yönetici)</div>
-            <div style="font-size:0.75rem; color:var(--text-muted);">155 Üye Kütüğü • 7 Aile Grubu • Gelir Masası • Audit Log</div>
-          </div>
-          <span class="sec-badge warning">Admin Girişi →</span>
-        </div>
-
-        <div class="demo-account-pill" onclick="quickGatewayLogin('trainer', 'TR-1')">
-          <div>
-            <div style="font-weight:700; font-size:0.85rem; color:var(--primary-dark);">🏇 Kağan Doruk (Baş Antrenör)</div>
-            <div style="font-size:0.75rem; color:var(--text-muted);">Bugün 11 Seans • Öğrenci Yoklaması & Gelişim Notu</div>
-          </div>
-          <span class="sec-badge info">Eğitmen Girişi →</span>
-        </div>
-
-        <div class="demo-account-pill" onclick="quickGatewayLogin('member', 'MEM-002')">
-          <div>
-            <div style="font-weight:700; font-size:0.85rem; color:var(--primary-dark);">👥 Kaan Yılmaz (Yılmaz Ailesi)</div>
-            <div style="font-size:0.75rem; color:var(--text-muted);">Ref: 049101 • 120 Derslik VIP Aile Paketi Sahibi</div>
-          </div>
-          <span class="sec-badge success">Giriş Yap →</span>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -331,7 +290,7 @@
 
       <!-- Role Switcher & User Pill -->
       <div style="display:flex; align-items:center; gap:0.6rem;">
-        <button class="role-badge-btn" id="roleBadgeBtn" onclick="openAuthModal('demo')">
+        <button class="role-badge-btn" id="roleBadgeBtn" onclick="logoutToGateway()">
           🔑 Rol Değiştir
         </button>
 
@@ -442,51 +401,17 @@
           <!-- Days Grid -->
           <div class="calendar-days" id="calendarDays"></div>
 
-          <!-- Slots & Lesson Type -->
+          <!-- Selected day — click "Eğitmen Takvimine Git" above for the real, live slot matrix -->
           <div class="slots-container">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-              <span style="font-size:0.85rem; font-weight:700;">Seçilen Gün: <span id="selectedDateText" style="color:var(--primary);">2026-09-03</span></span>
-              <span style="font-size:0.75rem; color:var(--gold-dark); font-weight:600;">Canlı Seanslar</span>
+              <span style="font-size:0.85rem; font-weight:700;">Seçilen Gün: <span id="selectedDateText" style="color:var(--primary);"></span></span>
             </div>
-
-            <div class="slot-grid">
-              <div class="slot-btn" onclick="selectSlot('09:00', this)">09:00</div>
-              <div class="slot-btn booked">10:00 (Dolu)</div>
-              <div class="slot-btn" onclick="selectSlot('11:00', this)">11:00</div>
-              <div class="slot-btn" onclick="selectSlot('14:00', this)">14:00</div>
-              <div class="slot-btn selected" onclick="selectSlot('15:00', this)">15:00</div>
-              <div class="slot-btn" onclick="selectSlot('16:00', this)">16:00</div>
-              <div class="slot-btn" onclick="selectSlot('17:00', this)">17:00</div>
-              <div class="slot-btn booked">18:00 (Dolu)</div>
-            </div>
-
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.75rem; margin-top:1rem;">
-              <div>
-                <label class="form-label">Aktivite Türü</label>
-                <select class="form-control" id="bookingLessonType">
-                  <option value="manej" selected>🏇 Manej Biniş Dersi (45 Dk)</option>
-                  <option value="safari">🌲 Doğa Safarisi (Ders Hakkı Yerine)</option>
-                </select>
-              </div>
-              <div>
-                <label class="form-label">Antrenör</label>
-                <select class="form-control" id="trainerSelect">
-                  <option>Ahmet Hoca (Baş Antrenör)</option>
-                  <option>Selin Hoca (Dresaj)</option>
-                  <option>Can Hoca (Safari Rehberi)</option>
-                </select>
-              </div>
-            </div>
-
-            <button class="btn-gold" style="width:100%; margin-top:1.25rem; padding:0.85rem;" onclick="confirmLessonBooking()">
-              🏇 Seansı Rezerve Et (1 Seans Düşer)
-            </button>
+            <button class="btn-outline" style="width:100%;" onclick="switchView('availability')">Bu Gün İçin Müsait Saatleri Gör →</button>
           </div>
         </div>
 
-        <!-- Right: Active Lessons & Package Summary -->
+        <!-- Right: Active Lessons -->
         <div>
-          <!-- Active Lessons Card with 2-Hour Rules -->
           <div class="card">
             <div class="card-header">
               <div class="card-title">
@@ -494,32 +419,6 @@
               </div>
             </div>
             <div id="activeLessonsList"></div>
-          </div>
-
-          <!-- Active Package Summary Card -->
-          <div class="card" style="background: linear-gradient(135deg, #11261E 0%, #1B3B2F 100%); color: #FFFFFF; border-color: rgba(197, 160, 89, 0.4);">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem;">
-              <div>
-                <div style="font-size:0.75rem; color:var(--gold-light); font-weight:700; text-transform:uppercase; letter-spacing:1px;">Aktif Üyelik</div>
-                <div style="font-family:var(--font-serif); font-size:1.25rem; font-weight:700; color:#FFFFFF;">3 Aylık Tesis Üyeliği</div>
-              </div>
-              <span style="background:var(--gold-gradient); color:var(--primary-dark); font-weight:800; font-size:0.7rem; padding:0.25rem 0.6rem; border-radius:var(--radius-full);">AKTİF</span>
-            </div>
-
-            <div style="margin-bottom:1rem;">
-              <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:0.35rem;">
-                <span style="color:rgba(255,255,255,0.75);">Kullanım İlerlemesi</span>
-                <span style="font-weight:700; color:var(--gold-light);">4 / 12 Ders (%33)</span>
-              </div>
-              <div style="height:6px; background:rgba(255,255,255,0.15); border-radius:10px; overflow:hidden;">
-                <div style="width:33%; height:100%; background:var(--gold-gradient);"></div>
-              </div>
-            </div>
-
-            <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:rgba(255,255,255,0.7); border-top:1px solid rgba(255,255,255,0.1); padding-top:0.75rem;">
-              <span>Bitiş Tarihi: <b>15 Kasım 2026</b></span>
-              <a href="#" onclick="switchView('packages')" style="color:var(--gold-light); text-decoration:none; font-weight:700;">Paket Satın Al / Yükselt →</a>
-            </div>
           </div>
         </div>
 
@@ -551,21 +450,12 @@
         <div class="matrix-filters">
           <div>
             <span style="font-size:0.75rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:0.35rem;">GÜN SEÇİMİ:</span>
-            <div class="filter-btn-group">
-              <button class="filter-chip matrix-date-btn active" onclick="setMatrixDate('2026-09-02', this)">Bugün (02 Eyl)</button>
-              <button class="filter-chip matrix-date-btn" onclick="setMatrixDate('2026-09-03', this)">Yarın (03 Eyl)</button>
-              <button class="filter-chip matrix-date-btn" onclick="setMatrixDate('2026-09-04', this)">Cuma (04 Eyl)</button>
-            </div>
+            <div class="filter-btn-group" id="matrixDateButtons"><!-- Populated by app.js --></div>
           </div>
 
           <div>
             <span style="font-size:0.75rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:0.35rem;">EĞİTMEN FİLTRESİ:</span>
-            <div class="filter-btn-group">
-              <button class="filter-chip matrix-trainer-btn active" onclick="setMatrixTrainerFilter('all', this)">Tüm Eğitmenler</button>
-              <button class="filter-chip matrix-trainer-btn" onclick="setMatrixTrainerFilter('TR-1', this)">Ahmet Hoca</button>
-              <button class="filter-chip matrix-trainer-btn" onclick="setMatrixTrainerFilter('TR-2', this)">Selin Hoca</button>
-              <button class="filter-chip matrix-trainer-btn" onclick="setMatrixTrainerFilter('TR-3', this)">Can Hoca</button>
-            </div>
+            <div class="filter-btn-group" id="matrixTrainerButtons"><!-- Populated by app.js --></div>
           </div>
         </div>
 
@@ -843,7 +733,7 @@
           <button class="btn-primary" style="flex:1;" onclick="showToast('✓ Profil bilgileriniz güncellendi!')">
             Bilgileri Kaydet
           </button>
-          <button class="btn-outline" style="border-color:#EF4444; color:#EF4444;" onclick="openAuthModal('demo')">
+          <button class="btn-outline" style="border-color:#EF4444; color:#EF4444;" onclick="logoutToGateway()">
             Hesap Değiştir
           </button>
         </div>
@@ -863,15 +753,15 @@
               <h2 style="font-family:var(--font-serif); font-size:1.75rem; color:var(--primary-dark); margin:0;">
                 👑 ANGORA ADMİN PANELİ
               </h2>
-              <span class="admin-badge">Süper Yönetici: Ahmet Yönetici</span>
+              <span class="admin-badge" id="adminHeaderName">Süper Yönetici</span>
             </div>
             <p style="font-size:0.85rem; color:var(--text-muted); margin:0.25rem 0 0 0;">
-              Canlı kulüp verileri, 155+ üye kütüğü, eğitmen seansları, 7 aile grubu, gelir hesaplamaları ve istek masası.
+              Canlı kulüp verileri, üye kütüğü, eğitmen seansları, aile grupları, gelir hesaplamaları ve istek masası.
             </p>
           </div>
           <div style="display:flex; gap:0.5rem; align-items:center;">
             <button class="btn-outline" style="padding:0.4rem 0.85rem; font-size:0.8rem;" onclick="switchAdminSubTab('settings')">⚙️ Kulüp Ayarları</button>
-            <button class="btn-outline" style="padding:0.4rem 0.85rem; font-size:0.8rem; border-color:#EF4444; color:#EF4444;" onclick="switchRole('member'); showToast('Yönetici oturumu kapatıldı.')">Çıkış Yap</button>
+            <button class="btn-outline" style="padding:0.4rem 0.85rem; font-size:0.8rem; border-color:#EF4444; color:#EF4444;" onclick="logoutToGateway()">Çıkış Yap</button>
           </div>
         </div>
 
@@ -879,10 +769,10 @@
         <div style="display:flex; gap:0.4rem; overflow-x:auto; padding-bottom:0.25rem; border-top:1px solid var(--border); padding-top:0.85rem;">
           <button class="tab-btn active" id="adminTabBtn-dashboard" onclick="switchAdminSubTab('dashboard')">🏠 Anasayfa</button>
           <button class="tab-btn" id="adminTabBtn-trainers" onclick="switchAdminSubTab('trainers')">🏇 Eğitmenler</button>
-          <button class="tab-btn" id="adminTabBtn-members" onclick="switchAdminSubTab('members')">👥 Üyeler (155)</button>
-          <button class="tab-btn" id="adminTabBtn-families" onclick="switchAdminSubTab('families')">👨‍👩‍👧‍👦 Aile Grupları (7)</button>
+          <button class="tab-btn" id="adminTabBtn-members" onclick="switchAdminSubTab('members')">👥 Üyeler</button>
+          <button class="tab-btn" id="adminTabBtn-families" onclick="switchAdminSubTab('families')">👨‍👩‍👧‍👦 Aile Grupları</button>
           <button class="tab-btn" id="adminTabBtn-payments" onclick="switchAdminSubTab('payments')">💰 Hesaplamalar</button>
-          <button class="tab-btn" id="adminTabBtn-notifications" onclick="switchAdminSubTab('notifications')">🔔 İstekler & Bildirimler <span style="background:#EF4444; color:#FFF; font-size:0.65rem; padding:0.1rem 0.4rem; border-radius:var(--radius-full); margin-left:0.25rem;">5</span></button>
+          <button class="tab-btn" id="adminTabBtn-notifications" onclick="switchAdminSubTab('notifications')">🔔 İstekler & Bildirimler <span style="background:#EF4444; color:#FFF; font-size:0.65rem; padding:0.1rem 0.4rem; border-radius:var(--radius-full); margin-left:0.25rem;" id="adminNotifBadge"></span></button>
           <button class="tab-btn" id="adminTabBtn-settings" onclick="switchAdminSubTab('settings')">⚙️ Ayarlar</button>
           <button class="tab-btn" id="adminTabBtn-security" onclick="switchAdminSubTab('security')">🔒 Güvenlik & Audit</button>
         </div>
@@ -894,20 +784,18 @@
       <div class="admin-sub-view" id="adminSubView-dashboard">
         
         <!-- Date Bar -->
-        <div style="display:flex; justify-content:space-between; align-items:center; background:#FFFFFF; border:1px solid var(--border); border-radius:var(--radius-sm); padding:0.6rem 1rem; margin-bottom:1rem;">
-          <button class="admin-action-btn" onclick="showToast('Önceki gün')">‹</button>
-          <div style="font-weight:700; color:var(--primary-dark); font-size:0.95rem;">📅 Cumartesi, 5 Eylül 2026</div>
-          <button class="admin-action-btn" onclick="showToast('Sonraki gün')">›</button>
+        <div style="display:flex; justify-content:center; align-items:center; background:#FFFFFF; border:1px solid var(--border); border-radius:var(--radius-sm); padding:0.6rem 1rem; margin-bottom:1rem;">
+          <div style="font-weight:700; color:var(--primary-dark); font-size:0.95rem;" id="adminDashboardDate">📅</div>
         </div>
 
-        <!-- 5 KPI Counters (100% Real Production Data) -->
+        <!-- KPI Counters -->
         <div class="stat-grid" style="grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); margin-bottom:1.5rem;">
-          
+
           <div class="stat-card primary">
             <div class="stat-data">
               <span class="stat-label">Bugünkü Dersler</span>
-              <span class="stat-value" id="adminStatSessions">20 Ders</span>
-              <span style="font-size:0.7rem; color:var(--text-muted);">2 Tamamlandı • 18 Bekleyen</span>
+              <span class="stat-value" id="adminStatSessions">—</span>
+              <span style="font-size:0.7rem; color:var(--text-muted);" id="adminStatSessionsSub"></span>
             </div>
             <div class="stat-icon-wrapper">🏇</div>
           </div>
@@ -915,8 +803,8 @@
           <div class="stat-card gold">
             <div class="stat-data">
               <span class="stat-label">Satılan Paket (Gelir)</span>
-              <span class="stat-value" id="adminStatSold">3.412K ₺</span>
-              <span style="font-size:0.7rem; color:var(--text-muted);">Bugün: 7K ₺ • Bu Ay: 20K ₺</span>
+              <span class="stat-value" id="adminStatSold">—</span>
+              <span style="font-size:0.7rem; color:var(--text-muted);" id="adminStatSoldSub"></span>
             </div>
             <div class="stat-icon-wrapper">💰</div>
           </div>
@@ -924,28 +812,10 @@
           <div class="stat-card success">
             <div class="stat-data">
               <span class="stat-label">Kayıtlı Üyeler</span>
-              <span class="stat-value" id="adminStatMembers">155 Üye</span>
-              <span style="font-size:0.7rem; color:var(--text-muted);">128 Yeni Kayıt (2026)</span>
+              <span class="stat-value" id="adminStatMembers">—</span>
+              <span style="font-size:0.7rem; color:var(--text-muted);" id="adminStatMembersSub"></span>
             </div>
             <div class="stat-icon-wrapper">👥</div>
-          </div>
-
-          <div class="stat-card warning">
-            <div class="stat-data">
-              <span class="stat-label">Gelen Üye Ziyareti</span>
-              <span class="stat-value" id="adminStatGelen">156 Ziyaret</span>
-              <span style="font-size:0.7rem; color:var(--text-muted);">Bugün: 2 • Bu Hafta: 36</span>
-            </div>
-            <div class="stat-icon-wrapper">🌲</div>
-          </div>
-
-          <div class="stat-card" style="background:#FFFFFF; border:1px solid var(--border);">
-            <div class="stat-data">
-              <span class="stat-label">Deneme Dersi</span>
-              <span class="stat-value" style="color:var(--primary-dark);">2 Üyelik</span>
-              <span style="font-size:0.7rem; color:var(--text-muted);">Dönüşüm Oranı: %100</span>
-            </div>
-            <div class="stat-icon-wrapper">🐎</div>
           </div>
 
         </div>
@@ -954,7 +824,7 @@
         <div class="card" style="margin-bottom:1.5rem; background:linear-gradient(135deg, rgba(197, 160, 89, 0.1), rgba(27, 59, 47, 0.05)); border:1px solid var(--gold); display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="switchAdminSubTab('families')">
           <div>
             <div style="font-weight:800; font-size:1rem; color:var(--primary-dark);">👨‍👩‍👧‍👦 Aile Grupları Yönetimi</div>
-            <div style="font-size:0.8rem; color:var(--text-muted);">7 Aktif aile grubu ve ortak kredi havuzunu yönet →</div>
+            <div style="font-size:0.8rem; color:var(--text-muted);">Aile gruplarını ve ortak kredi havuzunu yönet →</div>
           </div>
           <button class="btn-primary" style="padding:0.4rem 0.85rem; font-size:0.8rem;">Grupları İncele →</button>
         </div>
@@ -965,7 +835,7 @@
             <div class="card-title">
               <span>✅</span> Günlük Yoklama & Seans Akışı (Bugün)
             </div>
-            <span style="font-size:0.75rem; background:rgba(27,59,47,0.08); color:var(--primary-dark); padding:0.2rem 0.6rem; border-radius:var(--radius-full); font-weight:700;">20 Seans Planlı</span>
+            <span style="font-size:0.75rem; background:rgba(27,59,47,0.08); color:var(--primary-dark); padding:0.2rem 0.6rem; border-radius:var(--radius-full); font-weight:700;" id="adminAttendanceFeedCount"></span>
           </div>
           <div id="adminAttendanceFeed">
             <!-- Populated by app.js -->
@@ -983,7 +853,7 @@
             <div class="card-title">
               <span>🏇</span> Kulüp Eğitmenleri ve Günlük Ders Dağılımı
             </div>
-            <span style="font-size:0.75rem; color:var(--text-muted);">4 Eğitmen Aktif</span>
+            <span style="font-size:0.75rem; color:var(--text-muted);" id="adminTrainersActiveCount"></span>
           </div>
           <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:1rem; margin-bottom:1.5rem;" id="adminTrainersDetailGrid">
             <!-- Populated by app.js -->
@@ -1077,82 +947,25 @@
               <thead>
                 <tr style="border-bottom:2px solid var(--border); text-align:left; color:var(--primary-dark); font-weight:800;">
                   <th style="padding:0.75rem 0.5rem;">Metrik</th>
-                  <th style="padding:0.75rem 0.5rem; color:var(--gold-dark);">BUGÜN (5 Eyl Cmt)</th>
-                  <th style="padding:0.75rem 0.5rem; color:var(--primary);">BU AY (Eyl 2026)</th>
+                  <th style="padding:0.75rem 0.5rem; color:var(--gold-dark);">BUGÜN</th>
+                  <th style="padding:0.75rem 0.5rem; color:var(--primary);">BU AY</th>
                   <th style="padding:0.75rem 0.5rem;">TOPLAM (Tüm Zaman)</th>
                 </tr>
               </thead>
               <tbody>
                 <tr style="border-bottom:1px solid var(--border);">
-                  <td style="padding:0.75rem 0.5rem; font-weight:700;">💵 Kulüp Geliri</td>
-                  <td style="padding:0.75rem 0.5rem; font-weight:800; color:var(--gold-dark); font-size:1.05rem;">₺7.000</td>
-                  <td style="padding:0.75rem 0.5rem; font-weight:800; color:var(--primary); font-size:1.05rem;">₺20.200</td>
-                  <td style="padding:0.75rem 0.5rem; font-weight:800; color:var(--primary-dark); font-size:1.15rem;">₺3.408.150</td>
+                  <td style="padding:0.75rem 0.5rem; font-weight:700;">💵 Kulüp Geliri (Onaylı Paket Satışı)</td>
+                  <td style="padding:0.75rem 0.5rem; font-weight:800; color:var(--gold-dark); font-size:1.05rem;" id="finRevenueToday">—</td>
+                  <td style="padding:0.75rem 0.5rem; font-weight:800; color:var(--primary); font-size:1.05rem;" id="finRevenueMonth">—</td>
+                  <td style="padding:0.75rem 0.5rem; font-weight:800; color:var(--primary-dark); font-size:1.15rem;" id="finRevenueAllTime">—</td>
                 </tr>
                 <tr style="border-bottom:1px solid var(--border);">
-                  <td style="padding:0.75rem 0.5rem; font-weight:700;">📦 Satılan Paket</td>
-                  <td style="padding:0.75rem 0.5rem; font-weight:700;">1 Paket</td>
-                  <td style="padding:0.75rem 0.5rem; font-weight:700;">3 Paket</td>
-                  <td style="padding:0.75rem 0.5rem; font-weight:700;">202 Paket</td>
+                  <td style="padding:0.75rem 0.5rem; font-weight:700;">🏇 Bugünkü Ders Durumu</td>
+                  <td colspan="3" style="padding:0.75rem 0.5rem; font-weight:700;" id="finLessonsToday">—</td>
                 </tr>
                 <tr style="border-bottom:1px solid var(--border);">
-                  <td style="padding:0.75rem 0.5rem; font-weight:700;">🏇 Satılan Ders</td>
-                  <td style="padding:0.75rem 0.5rem; font-weight:700;">4 Ders</td>
-                  <td style="padding:0.75rem 0.5rem; font-weight:700;">42 Ders</td>
-                  <td style="padding:0.75rem 0.5rem; font-weight:700;">3.103 Ders</td>
-                </tr>
-                <tr style="border-bottom:1px solid var(--border);">
-                  <td style="padding:0.75rem 0.5rem; font-weight:700;">✅ İşlenen Ders</td>
-                  <td style="padding:0.75rem 0.5rem; font-weight:700;">3 Ders</td>
-                  <td style="padding:0.75rem 0.5rem; font-weight:700;">49 Ders</td>
-                  <td style="padding:0.75rem 0.5rem; font-weight:700;">1.000 Ders</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Eğitmen Dersleri Breakdown Table -->
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">
-              <span>🏇</span> Eğitmen Bazlı Ders Gerçekleşme Sayıları
-            </div>
-          </div>
-          <div style="overflow-x:auto;">
-            <table style="width:100%; border-collapse:collapse; font-size:0.9rem;">
-              <thead>
-                <tr style="border-bottom:2px solid var(--border); text-align:left; color:var(--text-muted);">
-                  <th style="padding:0.75rem 0.5rem;">Eğitmen</th>
-                  <th style="padding:0.75rem 0.5rem;">Bugün</th>
-                  <th style="padding:0.75rem 0.5rem;">Bu Ay</th>
-                  <th style="padding:0.75rem 0.5rem;">Toplam (Tüm Zaman)</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr style="border-bottom:1px solid var(--border);">
-                  <td style="padding:0.6rem 0.5rem; font-weight:700;">Faruk Ateş</td>
-                  <td style="padding:0.6rem 0.5rem; font-weight:700; color:var(--primary);">1</td>
-                  <td style="padding:0.6rem 0.5rem; font-weight:700;">7</td>
-                  <td style="padding:0.6rem 0.5rem; font-weight:800; color:var(--gold-dark);">281 Ders</td>
-                </tr>
-                <tr style="border-bottom:1px solid var(--border);">
-                  <td style="padding:0.6rem 0.5rem; font-weight:700;">Ela Aydemir</td>
-                  <td style="padding:0.6rem 0.5rem; font-weight:700; color:var(--primary);">0</td>
-                  <td style="padding:0.6rem 0.5rem; font-weight:700;">18</td>
-                  <td style="padding:0.6rem 0.5rem; font-weight:800; color:var(--gold-dark);">358 Ders</td>
-                </tr>
-                <tr style="border-bottom:1px solid var(--border);">
-                  <td style="padding:0.6rem 0.5rem; font-weight:700;">Aslı Yücel</td>
-                  <td style="padding:0.6rem 0.5rem; font-weight:700; color:var(--primary);">0</td>
-                  <td style="padding:0.6rem 0.5rem; font-weight:700;">0</td>
-                  <td style="padding:0.6rem 0.5rem; font-weight:800; color:var(--gold-dark);">13 Ders</td>
-                </tr>
-                <tr style="border-bottom:1px solid var(--border);">
-                  <td style="padding:0.6rem 0.5rem; font-weight:700;">Kağan Doruk</td>
-                  <td style="padding:0.6rem 0.5rem; font-weight:700; color:var(--primary);">2</td>
-                  <td style="padding:0.6rem 0.5rem; font-weight:700;">22</td>
-                  <td style="padding:0.6rem 0.5rem; font-weight:800; color:var(--gold-dark);">348 Ders</td>
+                  <td style="padding:0.75rem 0.5rem; font-weight:700;">👥 Toplam Üye</td>
+                  <td colspan="3" style="padding:0.75rem 0.5rem; font-weight:700;" id="finTotalMembers">—</td>
                 </tr>
               </tbody>
             </table>
@@ -1166,40 +979,23 @@
       <!-- ================================================================== -->
       <div class="admin-sub-view" id="adminSubView-notifications" style="display:none;">
         
-        <!-- Category Accordions -->
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:0.75rem; margin-bottom:1.5rem;">
-          <button class="card" style="padding:1rem; text-align:center; cursor:pointer;" onclick="showToast('Yeni üye kaydı bekleyen yok.')">
-            <div style="font-size:1.5rem; margin-bottom:0.3rem;">🆕</div>
-            <div style="font-weight:700; font-size:0.85rem;">Yeni Üye Kaydı</div>
-            <span style="font-size:0.75rem; color:var(--text-muted);">0 Bekleyen ▼</span>
-          </button>
-
-          <button class="card" style="padding:1rem; text-align:center; cursor:pointer;" onclick="showToast('Paket talebi bekleyen yok.')">
-            <div style="font-size:1.5rem; margin-bottom:0.3rem;">📦</div>
-            <div style="font-weight:700; font-size:0.85rem;">Paket Talebi</div>
-            <span style="font-size:0.75rem; color:var(--text-muted);">0 Bekleyen ▼</span>
-          </button>
-
-          <button class="card" style="padding:1rem; text-align:center; cursor:pointer; border-color:var(--gold);" onclick="showToast('1 adet eski üye kaydı bekliyor: Zeynep Yıldırım')">
-            <div style="font-size:1.5rem; margin-bottom:0.3rem;">🕐</div>
-            <div style="font-weight:700; font-size:0.85rem;">Eski Üye Kaydı</div>
-            <span style="font-size:0.75rem; background:var(--gold); color:#FFF; padding:0.1rem 0.4rem; border-radius:var(--radius-full); font-weight:700;">1 Bekleyen ▼</span>
-          </button>
-
-          <button class="card" style="padding:1rem; text-align:center; cursor:pointer;" onclick="showToast('Deneme dersi talebi bekleyen yok.')">
-            <div style="font-size:1.5rem; margin-bottom:0.3rem;">🐎</div>
-            <div style="font-weight:700; font-size:0.85rem;">Deneme Dersi</div>
-            <span style="font-size:0.75rem; color:var(--text-muted);">0 Bekleyen ▼</span>
-          </button>
-
-          <button class="card" style="padding:1rem; text-align:center; cursor:pointer; border-color:var(--primary);" onclick="showToast('4 adet aile üyesi bağlama talebi bekliyor.')">
-            <div style="font-size:1.5rem; margin-bottom:0.3rem;">👨‍👩‍👧</div>
-            <div style="font-weight:700; font-size:0.85rem;">Aile Üyesi</div>
-            <span style="font-size:0.75rem; background:var(--primary); color:#FFF; padding:0.1rem 0.4rem; border-radius:var(--radius-full); font-weight:700;">4 Bekleyen ▼</span>
-          </button>
+        <!-- Package Purchase Requests -->
+        <div class="card" style="margin-bottom:1.5rem;">
+          <div class="card-header">
+            <div class="card-title">
+              <span>📦</span> Bekleyen Paket Talepleri
+            </div>
+          </div>
+          <div id="adminPurchaseRequestsList" style="display:flex; flex-direction:column; gap:0.6rem; margin-top:0.75rem;">
+            <!-- Rendered by app.js -->
+          </div>
         </div>
 
-        <!-- ⚠️ Low Lesson Member Alerts (Exact Feed from Live Old System) -->
+        <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:1.5rem;">
+          Not: Yeni üye kaydı, eski üye kaydı, deneme dersi ve aile üyesi bağlama talepleri için ayrı bir onay kuyruğu henüz bu sürümde yok — şimdilik bu işlemler admin tarafından doğrudan Üyeler / Aile Grupları sekmelerinden yapılıyor.
+        </p>
+
+        <!-- ⚠️ Low Lesson Member Alerts -->
         <div class="card">
           <div class="card-header">
             <div class="card-title">
@@ -1262,13 +1058,16 @@
           </div>
           <div class="form-group">
             <label class="form-label">Pazartesi Kapalı Kuralı</label>
-            <input type="text" class="form-control" value="Aktif (Pazartesi seansları otomatik kilitli)" readonly>
+            <select class="form-control" id="settingMondayClosed">
+              <option value="1">Aktif (Pazartesi seansları otomatik kilitli)</option>
+              <option value="0">Pasif (Pazartesi de açık)</option>
+            </select>
           </div>
           <div class="form-group">
-            <label class="form-label">İptal Süresi Kalkanı</label>
-            <input type="text" class="form-control" value="2 Saat (2 saatten az kala seans düşer)" readonly>
+            <label class="form-label">İptal Süresi Kalkanı (Genel Varsayılan, Saat)</label>
+            <input type="number" min="0" class="form-control" id="settingCancellationHours">
           </div>
-          <button class="btn-primary" style="width:100%;" onclick="showToast('✓ Kulüp ayarları başarıyla güncellendi!')">
+          <button class="btn-primary" style="width:100%;" onclick="adminSaveClubSettings()">
             Ayarları Güncelle
           </button>
         </div>
@@ -1300,21 +1099,15 @@
           </div>
         </div>
 
-        <!-- Security Actions & Diagnostics Bar -->
+        <!-- Audit Log Actions -->
         <div class="card" style="margin-bottom:1.5rem;">
           <div class="card-header">
             <div class="card-title">
-              <span>🧪</span> Canlı Güvenlik Denetimi & Sızma Testi Simülatörü
+              <span>🔒</span> Güvenlik & Audit Log
             </div>
             <div style="display:flex; gap:0.5rem;">
-              <button class="btn-primary" style="padding:0.4rem 0.85rem; font-size:0.8rem;" onclick="runLiveSecurityDiagnostic()">
-                ▶️ Otomatik Sec Testini Çalıştır
-              </button>
               <button class="btn-outline" style="padding:0.4rem 0.85rem; font-size:0.8rem;" onclick="exportSecurityLogs()">
                 📥 Audit Logunu İndir (JSON)
-              </button>
-              <button class="btn-outline" style="padding:0.4rem 0.85rem; font-size:0.8rem; color:#EF4444;" onclick="clearSecurityAuditLogs()">
-                🗑️ Temizle
               </button>
             </div>
           </div>
@@ -1372,7 +1165,7 @@
             </p>
           </div>
           <div style="display:flex; gap:0.5rem; align-items:center;">
-            <button class="btn-outline" style="padding:0.4rem 0.85rem; font-size:0.8rem; border-color:#EF4444; color:#EF4444;" onclick="openAuthModal()">Hesap Değiştir</button>
+            <button class="btn-outline" style="padding:0.4rem 0.85rem; font-size:0.8rem; border-color:#EF4444; color:#EF4444;" onclick="logoutToGateway()">Hesap Değiştir</button>
           </div>
         </div>
       </div>
@@ -1520,128 +1313,6 @@
   </div>
 
   <!-- ====================================================================
-         AUTHENTICATION & LOGIN MODAL (MEMBER, ADMIN, TRAINER, DEMO)
-         ==================================================================== -->
-  <div class="modal-overlay" id="authModal">
-    <div class="modal-box" style="max-width:480px;">
-      <div class="modal-header">
-        <div class="modal-title">
-          <span>🏇</span> Güvenli Giriş & Kimlik Doğrulama
-        </div>
-        <button class="modal-close" onclick="closeModal('authModal')">✕</button>
-      </div>
-
-      <!-- Auth Navigation Tabs -->
-      <div class="auth-tabs">
-        <button class="auth-tab-btn active" id="authTabBtn-member" onclick="switchAuthTab('member')">👤 Üye Girişi</button>
-        <button class="auth-tab-btn" id="authTabBtn-admin" onclick="switchAuthTab('admin')">👑 Yönetici</button>
-        <button class="auth-tab-btn" id="authTabBtn-trainer" onclick="switchAuthTab('trainer')">🎯 Eğitmen</button>
-        <button class="auth-tab-btn" id="authTabBtn-demo" onclick="switchAuthTab('demo')">⚡ Hızlı Demo</button>
-      </div>
-
-      <!-- TAB 1: ÜYE GİRİŞİ -->
-      <div class="auth-sub-panel" id="authPanel-member">
-        <div class="form-group">
-          <label class="form-label">Telefon Numarası veya Referans Kodu</label>
-          <input type="text" class="form-control" id="loginMemberPhone" placeholder="Örn: 05551234567 veya 087798" value="087798">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Şifre</label>
-          <input type="password" class="form-control" id="loginMemberPass" placeholder="Şifreniz" value="elnur123">
-        </div>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; font-size:0.8rem;">
-          <label style="display:flex; align-items:center; gap:0.35rem; color:var(--text-muted); cursor:pointer;">
-            <input type="checkbox" checked> Beni Hatırla
-          </label>
-          <a href="#" style="color:var(--gold-dark); text-decoration:none;" onclick="showToast('SMS ile şifre sıfırlama kodu gönderildi.')">Şifremi Unuttum</a>
-        </div>
-        <button class="btn-gold" style="width:100%; padding:0.85rem;" onclick="processMemberLogin()">
-          🏇 Üye Portalı'na Giriş Yap
-        </button>
-      </div>
-
-      <!-- TAB 2: YÖNETİCİ GİRİŞİ -->
-      <div class="auth-sub-panel" id="authPanel-admin" style="display:none;">
-        <div class="form-group">
-          <label class="form-label">Yönetici E-Posta / Kullanıcı Adı</label>
-          <input type="text" class="form-control" id="loginAdminUser" placeholder="admin.demo@example.com" value="admin.demo@example.com">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Yönetici Şifresi</label>
-          <input type="password" class="form-control" id="loginAdminPass" placeholder="••••••••" value="demo1234">
-        </div>
-        <div class="form-group">
-          <label class="form-label">2-Aşamalı Güvenlik PIN Kodu</label>
-          <input type="password" maxlength="4" class="form-control" id="loginAdminPin" placeholder="4 Haneli PIN (Demo: 1450)" value="1450">
-        </div>
-        <button class="btn-primary" style="width:100%; padding:0.85rem;" onclick="processAdminLogin()">
-          👑 Yönetici Paneli'ne Güvenli Giriş
-        </button>
-      </div>
-
-      <!-- TAB 3: EĞİTMEN GİRİŞİ -->
-      <div class="auth-sub-panel" id="authPanel-trainer" style="display:none;">
-        <div class="form-group">
-          <label class="form-label">Eğitmen Seçimi</label>
-          <select class="form-control" id="loginTrainerSelect">
-            <option value="TR-1" selected>Kağan Doruk (Baş Antrenör)</option>
-            <option value="TR-2">Ela Aydemir (Dresaj & Temel Biniş)</option>
-            <option value="TR-3">Faruk Ateş (Engel & Safari)</option>
-            <option value="TR-4">Aslı Yücel (Çocuk & Başlangıç)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Eğitmen PIN / Şifre</label>
-          <input type="password" class="form-control" id="loginTrainerPass" placeholder="Eğitmen PIN (Demo: 1234)" value="1234">
-        </div>
-        <button class="btn-gold" style="width:100%; padding:0.85rem;" onclick="processTrainerLogin()">
-          🎯 Eğitmen Seans & Yoklama Masasına Gir
-        </button>
-      </div>
-
-      <!-- TAB 4: HIZLI DEMO SEÇİCİ -->
-      <div class="auth-sub-panel" id="authPanel-demo" style="display:none;">
-        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.75rem;">
-          Sunum ve denetim esnasında tek tıkla farklı roller ve hesaplar arasında anında geçiş yapın:
-        </p>
-
-        <div class="demo-account-pill" onclick="quickLoginAs('member', 'MEM-003')">
-          <div>
-            <div style="font-weight:700; font-size:0.85rem; color:var(--primary-dark);">👤 Demo Üye (Kulüp Üyesi)</div>
-            <div style="font-size:0.75rem; color:var(--text-muted);">Ref: 087798 • 30 Ders Kredisi • Aktif Seans: Manej</div>
-          </div>
-          <span class="sec-badge success">Giriş Yap →</span>
-        </div>
-
-        <div class="demo-account-pill" onclick="quickLoginAs('admin', 'ADM-001')">
-          <div>
-            <div style="font-weight:700; font-size:0.85rem; color:var(--primary-dark);">👑 Ahmet Yönetici (Süper Yönetici)</div>
-            <div style="font-size:0.75rem; color:var(--text-muted);">155 Üye Kütüğü • 7 Aile • Gelir Analitiği • Audit Log</div>
-          </div>
-          <span class="sec-badge warning">Admin Girişi →</span>
-        </div>
-
-        <div class="demo-account-pill" onclick="quickLoginAs('trainer', 'TR-1')">
-          <div>
-            <div style="font-weight:700; font-size:0.85rem; color:var(--primary-dark);">🏇 Kağan Doruk (Baş Antrenör)</div>
-            <div style="font-size:0.75rem; color:var(--text-muted);">Bugün 11 Seans • Öğrenci Yoklaması & Gözlem Notları</div>
-          </div>
-          <span class="sec-badge info">Eğitmen Girişi →</span>
-        </div>
-
-        <div class="demo-account-pill" onclick="quickLoginAs('member', 'MEM-002')">
-          <div>
-            <div style="font-weight:700; font-size:0.85rem; color:var(--primary-dark);">👥 Kaan Yılmaz (Yılmaz Ailesi)</div>
-            <div style="font-size:0.75rem; color:var(--text-muted);">Ref: 049101 • 120 Derslik VIP Aile Paketi Sahibi</div>
-          </div>
-          <span class="sec-badge success">Giriş Yap →</span>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ====================================================================
          MOBILE BOTTOM NAVIGATION (PWA)
          ==================================================================== -->
   <nav class="mobile-nav">
@@ -1667,27 +1338,5 @@
     </div>
   </nav>
 
-  <!-- App Script -->
-  <script src="src/js/app.js"></script>
-  <script>
-    function togglePackageCategory(cat) {
-      const memBox = document.getElementById('categoryMembership');
-      const safBox = document.getElementById('categorySafari');
-      const memBtn = document.getElementById('tabBtnMembership');
-      const safBtn = document.getElementById('tabBtnSafari');
-
-      if (cat === 'membership') {
-        memBox.style.display = 'block';
-        safBox.style.display = 'none';
-        memBtn.classList.add('active');
-        safBtn.classList.remove('active');
-      } else {
-        memBox.style.display = 'none';
-        safBox.style.display = 'block';
-        safBtn.classList.add('active');
-        memBtn.classList.remove('active');
-      }
-    }
-  </script>
 </body>
 </html>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AttendanceController as AdminAttendanceController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FamilyController as AdminFamilyController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\Admin\SafariTourController as AdminSafariTourController
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Auth\ClaimAccountController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\SessionController;
 use App\Http\Controllers\Member\AvailabilityController;
 use App\Http\Controllers\Member\PackageController;
 use App\Http\Controllers\Member\ReservationController;
@@ -21,8 +23,11 @@ use App\Http\Controllers\Trainer\SlotController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('app');
 });
+
+Route::get('/me', [SessionController::class, 'me'])->name('session.me');
+Route::get('/trainer-options', [SessionController::class, 'trainerOptions'])->name('session.trainer-options');
 
 Route::middleware('throttle:10,1')->prefix('login')->group(function () {
     Route::post('/member', [LoginController::class, 'member'])->name('login.member');
@@ -61,6 +66,9 @@ Route::middleware(['auth', 'role:trainer|admin'])->prefix('trainer')->group(func
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+
+    Route::get('/reservations/today', [AdminAttendanceController::class, 'today'])->name('admin.attendance.today');
+    Route::post('/reservations/{reservation}/attendance', [AdminAttendanceController::class, 'store'])->name('admin.attendance.store');
 
     Route::get('/members', [AdminMemberController::class, 'index'])->name('admin.members.index');
     Route::get('/members/{member}', [AdminMemberController::class, 'show'])->name('admin.members.show');
