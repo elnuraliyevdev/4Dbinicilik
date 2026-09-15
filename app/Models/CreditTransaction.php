@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['user_id', 'family_id', 'delta', 'reason', 'reference_type', 'reference_id', 'created_by'])]
+#[Fillable(['user_id', 'family_id', 'delta', 'reason', 'reference_type', 'reference_id', 'note', 'created_by'])]
 class CreditTransaction extends Model
 {
     public function user(): BelongsTo

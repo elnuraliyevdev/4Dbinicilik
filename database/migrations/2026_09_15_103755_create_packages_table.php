@@ -16,6 +16,8 @@ return new class extends Migration
             $table->boolean('is_featured')->default(false);
             $table->string('badge_label')->nullable();
             $table->unsignedInteger('sort_order')->default(0);
+            // Null falls back to club_settings.cancellation_window_hours (global default).
+            $table->unsignedInteger('cancellation_hours')->nullable();
             $table->timestamps();
         });
 

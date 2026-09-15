@@ -18,6 +18,9 @@ return new class extends Migration
             $table->json('features')->nullable();
             $table->boolean('is_active')->default(true);
             $table->unsignedInteger('sort_order')->default(0);
+            // Null falls back to club_settings.cancellation_window_hours (global default).
+            // Safaris likely need a longer window than a manège lesson — confirm with the club.
+            $table->unsignedInteger('cancellation_hours')->nullable();
             $table->timestamps();
         });
     }

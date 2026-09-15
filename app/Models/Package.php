@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['lesson_count', 'price_try', 'is_active', 'is_featured', 'badge_label', 'sort_order'])]
+#[Fillable(['lesson_count', 'price_try', 'is_active', 'is_featured', 'badge_label', 'sort_order', 'cancellation_hours'])]
 class Package extends Model
 {
     protected function casts(): array
