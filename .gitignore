@@ -47,3 +47,8 @@ Thumbs.db
 /sync_full_parity.cjs
 /test_*.cjs
 /vercel.json
+
+# Playwright E2E output
+/test-results
+/storage/playwright-report
+/playwright/.cache
