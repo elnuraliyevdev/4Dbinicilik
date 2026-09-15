@@ -26,13 +26,18 @@ class AdminUserSeeder extends Seeder
         $password = Str::password(16);
         $pin = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
 
-        $admin = User::query()->create([
+        // withTrashed(): a soft-deleted row with this email would otherwise
+        // fail the exists() check above (invisible to it) yet still crash a
+        // plain create() on the unique constraint.
+        $admin = User::withTrashed()->firstOrNew(['email' => $email]);
+        $admin->fill([
             'name' => 'Kulüp Yöneticisi',
-            'email' => $email,
             'password' => Hash::make($password),
             'pin_hash' => Hash::make($pin),
             'role' => 'admin',
         ]);
+        $admin->deleted_at = null;
+        $admin->save();
         $admin->assignRole('admin');
 
         $this->command?->info('Seeded initial admin user — save these, they are shown once:');

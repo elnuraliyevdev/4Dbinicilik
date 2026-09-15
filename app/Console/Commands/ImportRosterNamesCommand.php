@@ -53,10 +53,15 @@ class ImportRosterNamesCommand extends Command
                 $name = trim($m[1]);
                 $remaining = isset($m[2]) ? (int) $m[2] : 0;
 
-                $existing = User::query()->whereRaw('LOWER(name) = ?', [mb_strtolower($name)])->first();
+                // withTrashed(): a plain query here would be blind to a
+                // soft-deleted member with the same name and silently create
+                // a duplicate placeholder account instead of reviving theirs.
+                $existing = User::query()->withTrashed()->whereRaw('LOWER(name) = ?', [mb_strtolower($name)])->first();
 
                 if ($existing) {
                     $existing->update(['remaining_lessons' => $remaining]);
+                    $existing->deleted_at = null;
+                    $existing->save();
                     $updated++;
 
                     continue;

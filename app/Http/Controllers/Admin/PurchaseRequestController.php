@@ -34,23 +34,29 @@ class PurchaseRequestController extends Controller
         $package = $purchaseRequest->package;
         abort_unless($package, 422, 'Paket bulunamadı.');
 
-        DB::transaction(function () use ($purchaseRequest, $package, $request) {
-            $this->credits->adjustIndividual(
-                $purchaseRequest->user,
-                $package->lesson_count,
-                'package_purchase',
-                $request->user()->id,
-                "Onaylanan paket talebi #{$purchaseRequest->id}"
-            );
+        try {
+            DB::transaction(function () use ($purchaseRequest, $package, $request) {
+                $purchaseRequest->lockAndRequireStatus('pending', 'Bu talep zaten işleme alınmış.');
 
-            $purchaseRequest->user->update(['active_package_id' => $package->id]);
+                $this->credits->adjustIndividual(
+                    $purchaseRequest->user,
+                    $package->lesson_count,
+                    'package_purchase',
+                    $request->user()->id,
+                    "Onaylanan paket talebi #{$purchaseRequest->id}"
+                );
 
-            $purchaseRequest->update([
-                'status' => 'approved',
-                'reviewed_by' => $request->user()->id,
-                'reviewed_at' => now(),
-            ]);
-        });
+                $purchaseRequest->user->update(['active_package_id' => $package->id]);
+
+                $purchaseRequest->update([
+                    'status' => 'approved',
+                    'reviewed_by' => $request->user()->id,
+                    'reviewed_at' => now(),
+                ]);
+            });
+        } catch (\RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
 
         AuthEvent::log('PACKAGE_REQUEST_APPROVED', 'success', "Admin {$request->user()->name} — paket talebi onayladı: {$purchaseRequest->user->name} (+{$package->lesson_count} ders)", [
             'user_id' => $request->user()->id,
@@ -62,15 +68,19 @@ class PurchaseRequestController extends Controller
 
     public function reject(Request $request, PackagePurchaseRequest $purchaseRequest): JsonResponse
     {
-        if ($purchaseRequest->status !== 'pending') {
-            return response()->json(['message' => 'Bu talep zaten işleme alınmış.'], 422);
-        }
+        try {
+            DB::transaction(function () use ($purchaseRequest, $request) {
+                $purchaseRequest->lockAndRequireStatus('pending', 'Bu talep zaten işleme alınmış.');
 
-        $purchaseRequest->update([
-            'status' => 'rejected',
-            'reviewed_by' => $request->user()->id,
-            'reviewed_at' => now(),
-        ]);
+                $purchaseRequest->update([
+                    'status' => 'rejected',
+                    'reviewed_by' => $request->user()->id,
+                    'reviewed_at' => now(),
+                ]);
+            });
+        } catch (\RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
 
         AuthEvent::log('PACKAGE_REQUEST_REJECTED', 'info', "Admin {$request->user()->name} — paket talebi reddetti: {$purchaseRequest->user->name}", [
             'user_id' => $request->user()->id,

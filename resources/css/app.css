@@ -68,6 +68,16 @@ body {
   }
 }
 
+/* Below this width the topbar (brand + role badge + user pill + this button)
+   overflows the viewport by a few px — logout is already reachable via the
+   role badge pill and the Profile page, so drop the redundant button here
+   rather than shrinking/wrapping the whole topbar. */
+@media (max-width: 480px) {
+  .topbar-logout-btn.btn-outline {
+    display: none;
+  }
+}
+
 /* ==========================================================================
    TOPBAR & HEADER
    ========================================================================== */

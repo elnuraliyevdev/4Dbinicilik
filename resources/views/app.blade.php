@@ -307,7 +307,7 @@
           <div class="user-avatar" id="navUserAvatar">👤</div>
         </div>
 
-        <button class="btn-outline" style="padding:0.4rem 0.75rem; font-size:0.8rem; border-color:#EF4444; color:#EF4444; border-radius:var(--radius-sm);" onclick="logoutToGateway()" title="Oturumu Kapat">
+        <button class="btn-outline topbar-logout-btn" style="padding:0.4rem 0.75rem; font-size:0.8rem; border-color:#EF4444; color:#EF4444; border-radius:var(--radius-sm);" onclick="logoutToGateway()" title="Oturumu Kapat">
           🚪 Çıkış
         </button>
       </div>
@@ -494,7 +494,7 @@
         </p>
 
         <!-- Package Sub-Tabs Toggle -->
-        <div style="display:inline-flex; background:#E2E8E5; padding:0.3rem; border-radius:var(--radius-full); margin-top:1rem;">
+        <div style="display:inline-flex; flex-wrap:wrap; justify-content:center; max-width:100%; background:#E2E8E5; padding:0.3rem; border-radius:var(--radius-full); margin-top:1rem;">
           <button class="filter-chip active" id="tabBtnMembership" onclick="togglePackageCategory('membership')">
             🏇 Tesis Üyelik Paketleri (5 Paket)
           </button>
@@ -847,7 +847,7 @@
             <div class="card-title">
               <span>👥</span> Kulüp Üye Kütüğü & Ders Kredisi Masası
             </div>
-            <div style="display:flex; gap:0.4rem; align-items:center;">
+            <div style="display:flex; flex-wrap:wrap; gap:0.4rem; align-items:center;">
               <button class="btn-outline" style="padding:0.35rem 0.75rem; font-size:0.75rem; border-color:var(--gold); color:var(--gold-dark); font-weight:700;" onclick="adminExportMembersCSV()">
                 📥 Excel / CSV İndir
               </button>
@@ -871,7 +871,7 @@
           </div>
 
           <!-- Members Table -->
-          <div style="overflow-x:auto;">
+          <div style="overflow-x:auto; min-width:0;">
             <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
               <thead>
                 <tr style="border-bottom:2px solid var(--border); text-align:left; color:var(--text-muted);">

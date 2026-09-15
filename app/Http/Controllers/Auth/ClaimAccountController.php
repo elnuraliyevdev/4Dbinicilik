@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\CompleteClaimRequest;
 use App\Models\AuthEvent;
 use App\Models\User;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 /**
@@ -17,17 +19,35 @@ use Illuminate\Support\Facades\Hash;
  */
 class ClaimAccountController extends Controller
 {
-    public function show(User $user): JsonResponse
+    /**
+     * The signed link an admin sends (sendClaimLink()) is meant to be opened
+     * directly in a phone browser — it has to render an actual form, not a
+     * raw JSON blob. wantsJson() keeps the JSON contract for API/test callers
+     * while a plain browser navigation gets the real page.
+     */
+    public function show(Request $request, User $user): JsonResponse|View
     {
         if ($user->password !== null) {
-            return response()->json(['message' => 'Bu hesap zaten kurulmuş, doğrudan giriş yapabilirsiniz.'], 409);
+            if ($request->wantsJson()) {
+                return response()->json(['message' => 'Bu hesap zaten kurulmuş, doğrudan giriş yapabilirsiniz.'], 409);
+            }
+
+            return view('claim-account', ['alreadyClaimed' => true, 'user' => null, 'needsContactInfo' => false]);
         }
 
-        return response()->json([
-            'name' => $user->name,
-            'phone' => $user->phone,
-            'email' => $user->email,
-            'needs_contact_info' => ! $user->phone && ! $user->email,
+        if ($request->wantsJson()) {
+            return response()->json([
+                'name' => $user->name,
+                'phone' => $user->phone,
+                'email' => $user->email,
+                'needs_contact_info' => ! $user->phone && ! $user->email,
+            ]);
+        }
+
+        return view('claim-account', [
+            'alreadyClaimed' => false,
+            'user' => $user,
+            'needsContactInfo' => ! $user->phone && ! $user->email,
         ]);
     }
 

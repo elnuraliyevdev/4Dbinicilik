@@ -27,6 +27,10 @@ class PackageController extends Controller
     {
         $user = $request->user();
 
+        if (PackagePurchaseRequest::query()->where('user_id', $user->id)->where('status', 'pending')->exists()) {
+            return response()->json(['message' => 'Zaten bekleyen bir paket talebiniz var, admin onayını bekleyin.'], 422);
+        }
+
         $purchaseRequest = PackagePurchaseRequest::create([
             'user_id' => $user->id,
             'package_id' => $request->validated('package_id'),

@@ -33,9 +33,13 @@ class AvailabilityController extends Controller
             return response()->json(['closed' => true, 'reason' => 'Pazartesi günleri kulüp kapalıdır.', 'trainers' => []]);
         }
 
+        // whereHas('user') matters: a trainer whose linked user was soft-deleted
+        // would otherwise crash this endpoint at $trainer->user->name below,
+        // taking down the whole booking calendar for every member.
         $trainers = Trainer::query()
             ->where('is_active', true)
             ->when($validated['trainer_id'] ?? null, fn ($q, $id) => $q->where('id', $id))
+            ->whereHas('user')
             ->with('user')
             ->get();
 

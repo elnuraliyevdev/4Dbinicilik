@@ -19,8 +19,17 @@ use App\Models\User;
  */
 class CreditLedgerService
 {
+    /**
+     * Locks the user (and, on fallback, the family) row before checking the
+     * balance — the caller's transaction only ever locked the trainer_slot
+     * row, which serializes bookings of the *same* slot but does nothing to
+     * stop the same member/family from booking two *different* slots
+     * concurrently and oversetting a balance of 1 into two reservations.
+     */
     public function deductForReservation(User $user, int $amount, string $reason, Reservation $reservation, ?int $createdBy = null): CreditTransaction
     {
+        $user = User::whereKey($user->id)->lockForUpdate()->firstOrFail();
+
         if ($user->remaining_lessons >= $amount) {
             $user->decrement('remaining_lessons', $amount);
             $user->increment('pending_lessons', $amount);
@@ -37,6 +46,7 @@ class CreditLedgerService
         }
 
         $family = $this->activeFamilyFor($user);
+        $family = $family ? Family::whereKey($family->id)->lockForUpdate()->first() : null;
 
         if ($family && $family->remaining_lessons >= $amount) {
             $family->decrement('remaining_lessons', $amount);
@@ -99,20 +109,33 @@ class CreditLedgerService
      * Marks a reservation's credit as permanently consumed (late cancellation,
      * no-show) — no balance is returned, but pending_lessons/used_lessons move.
      */
-    public function consumePending(Reservation $reservation): void
+    public function consumePending(Reservation $reservation, string $reason = 'attendance_consumed', ?int $createdBy = null): CreditTransaction
     {
         $original = $reservation->creditTransactions()->where('delta', '<', 0)->latest('id')->first();
         $amount = $original ? abs($original->delta) : 1;
 
-        $user = $reservation->user;
+        $user = User::whereKey($reservation->user_id)->lockForUpdate()->firstOrFail();
         $user->decrement('pending_lessons', $amount);
         $user->increment('used_lessons', $amount);
 
         if ($original?->family_id) {
-            $family = Family::query()->find($original->family_id);
+            $family = Family::whereKey($original->family_id)->lockForUpdate()->first();
             $family?->decrement('reserved_lessons', $amount);
             $family?->increment('used_lessons', $amount);
         }
+
+        return CreditTransaction::create([
+            'user_id' => $reservation->user_id,
+            'family_id' => null,
+            'delta' => 0,
+            'reason' => $reason,
+            'reference_type' => Reservation::class,
+            'reference_id' => $reservation->id,
+            'note' => $original?->family_id
+                ? "Kalıcı kullanım (aile havuzundan): {$amount} ders"
+                : "Kalıcı kullanım: {$amount} ders",
+            'created_by' => $createdBy,
+        ]);
     }
 
     /**
@@ -123,6 +146,8 @@ class CreditLedgerService
      */
     public function adjustIndividual(User $user, int $delta, string $reason, ?int $createdBy = null, ?string $note = null): CreditTransaction
     {
+        $user = User::whereKey($user->id)->lockForUpdate()->firstOrFail();
+
         if ($delta >= 0) {
             $user->increment('remaining_lessons', $delta);
             if ($reason === 'package_purchase') {

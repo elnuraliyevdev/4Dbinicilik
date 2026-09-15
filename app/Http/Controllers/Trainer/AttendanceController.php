@@ -29,13 +29,18 @@ class AttendanceController extends Controller
 
         $status = $request->validated('status');
 
-        DB::transaction(function () use ($reservation, $status) {
-            // Both outcomes permanently consume the credit — the lesson slot was
-            // held either way, unlike a member-initiated free cancellation.
-            $this->credits->consumePending($reservation);
-            $reservation->update(['status' => $status]);
-            TrainerSlot::where('reservation_id', $reservation->id)->update(['status' => 'available', 'reservation_id' => null]);
-        });
+        try {
+            DB::transaction(function () use ($reservation, $status, $request) {
+                $reservation->lockAndRequireStatus('confirmed', 'Bu rezervasyonun yoklaması zaten alınmış.');
+                // Both outcomes permanently consume the credit — the lesson slot was
+                // held either way, unlike a member-initiated free cancellation.
+                $this->credits->consumePending($reservation, 'attendance_consumed', $request->user()->id);
+                $reservation->update(['status' => $status]);
+                TrainerSlot::where('reservation_id', $reservation->id)->update(['status' => 'available', 'reservation_id' => null]);
+            });
+        } catch (\RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
 
         $label = $status === 'completed' ? 'Ders tamamlandı' : 'Öğrenci derse gelmedi';
         AuthEvent::log('ATTENDANCE_MARKED', 'info', "{$label}: {$reservation->reservation_code}", [

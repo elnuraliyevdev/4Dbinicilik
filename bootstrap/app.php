@@ -15,6 +15,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
         ]);
+
+        // The claim-account form is a standalone page opened straight from a
+        // signed link (no prior page load to seed a CSRF cookie/token for an
+        // anonymous visitor) — the URL signature itself is the forgery
+        // protection here, so CSRF verification is redundant on top of it.
+        $middleware->validateCsrfTokens(except: ['claim-account/*']);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

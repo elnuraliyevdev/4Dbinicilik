@@ -15,7 +15,7 @@ class FeedbackRequest extends FormRequest
     {
         return [
             'student_user_id' => ['required', 'integer', 'exists:users,id'],
-            'reservation_id' => ['nullable', 'integer', 'exists:reservations,id'],
+            'reservation_id' => ['required', 'integer', 'exists:reservations,id'],
             'discipline_level' => ['nullable', 'string', 'max:190'],
             'note' => ['required', 'string', 'max:2000'],
         ];

@@ -797,7 +797,14 @@ function renderUserProfile() {
   set('cardHolderName', safeName);
   set('cardRefCode', `REF: ${u.ref_code || '—'}`);
   set('cardRemainingCredits', `${u.remaining_lessons || 0} Ders`);
-  set('cardPackageExpiry', u.package_expires_at ? new Date(u.package_expires_at).toLocaleDateString('tr-TR') : 'Aktif paket yok');
+  set(
+    'cardPackageExpiry',
+    !u.active_package_id
+      ? 'Aktif paket yok'
+      : u.package_expires_at
+        ? new Date(u.package_expires_at).toLocaleDateString('tr-TR')
+        : 'Süresiz (Ders Bazlı Paket)'
+  );
   set('navUserName', safeName.split(' ')[0] || safeName);
   set('navUserRef', u.role === 'admin' ? '👑 Admin' : `Ref: ${u.ref_code || '—'}`);
   set('navUserAvatar', initial);
@@ -849,13 +856,13 @@ function renderTrainerRoster() {
       if (r.status !== 'confirmed') {
         return `
         <div style="background:var(--bg-page); border:1px dashed var(--border); border-radius:var(--radius-sm); padding:0.6rem 1rem; margin-bottom:0.5rem; opacity:0.8;">
-          ⏰ ${r.time} — ${escapeHtml(r.user.name)} <span class="sec-badge ${r.status === 'completed' ? 'success' : 'danger'}">${statusLabel(r.status)}</span>
+          ⏰ ${r.time} — ${escapeHtml(r.user?.name || 'Silinmiş Üye')} <span class="sec-badge ${r.status === 'completed' ? 'success' : 'danger'}">${statusLabel(r.status)}</span>
         </div>`;
       }
       return `
         <div style="background:#FFFFFF; border:1px solid var(--border); border-radius:var(--radius-sm); padding:0.85rem 1rem; margin-bottom:0.6rem; display:flex; justify-content:space-between; align-items:center;">
           <div>
-            <div style="font-weight:700; font-size:0.95rem; color:var(--primary-dark);">⏰ ${r.time} — <span style="color:var(--primary);">${escapeHtml(r.user.name)}</span></div>
+            <div style="font-weight:700; font-size:0.95rem; color:var(--primary-dark);">⏰ ${r.time} — <span style="color:var(--primary);">${escapeHtml(r.user?.name || 'Silinmiş Üye')}</span></div>
             <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(r.activity_label)}${r.horse ? ' • At: ' + escapeHtml(r.horse.name) : ''}</div>
           </div>
           <div style="display:flex; gap:0.4rem;">
@@ -873,7 +880,7 @@ function populateTrainerStudentSelect() {
   if (!select) return;
   const confirmed = cachedTrainerReservations.filter((r) => r.status === 'confirmed');
   select.innerHTML = confirmed.length
-    ? confirmed.map((r) => `<option value="${r.user.id}" data-reservation="${r.id}">${escapeHtml(r.user.name)}</option>`).join('')
+    ? confirmed.map((r) => `<option value="${r.user?.id ?? ''}" data-reservation="${r.id}">${escapeHtml(r.user?.name || 'Silinmiş Üye')}</option>`).join('')
     : '<option value="">Bugün ders alan öğrenci yok</option>';
 }
 
@@ -1014,8 +1021,8 @@ async function loadAdminAttendanceFeed() {
         (res) => `
       <div style="background:#FFFFFF; border:1px solid var(--border); border-radius:var(--radius-sm); padding:0.75rem 1rem; margin-bottom:0.6rem; display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <div style="font-weight:700; font-size:0.9rem;">${escapeHtml(res.activity_label)} — <span style="color:var(--primary);">${escapeHtml(res.user.name)}</span></div>
-          <div style="font-size:0.75rem; color:var(--text-muted);">📅 ${res.date} (${res.time})${res.trainer ? ' • 👤 ' + escapeHtml(res.trainer.user.name) : ''}${res.horse ? ' • 🐴 ' + escapeHtml(res.horse.name) : ''}</div>
+          <div style="font-weight:700; font-size:0.9rem;">${escapeHtml(res.activity_label)} — <span style="color:var(--primary);">${escapeHtml(res.user?.name || 'Silinmiş Üye')}</span></div>
+          <div style="font-size:0.75rem; color:var(--text-muted);">📅 ${res.date} (${res.time})${res.trainer ? ' • 👤 ' + escapeHtml(res.trainer.user?.name || 'Silinmiş Eğitmen') : ''}${res.horse ? ' • 🐴 ' + escapeHtml(res.horse.name) : ''}</div>
         </div>
         <div style="display:flex; gap:0.4rem; align-items:center;">
           <span class="lesson-badge ${res.status === 'confirmed' ? 'badge-approved' : 'badge-pending'}">${statusLabel(res.status)}</span>
@@ -1353,7 +1360,7 @@ function renderPurchaseRequests(requests) {
       (r) => `
     <div style="background:#FFFFFF; border:1px solid var(--border); border-radius:var(--radius-sm); padding:0.75rem 1rem; display:flex; justify-content:space-between; align-items:center;">
       <div>
-        <div style="font-weight:700; font-size:0.9rem;">${escapeHtml(r.user.name)} — ${r.package ? r.package.lesson_count + ' Ders' : 'Paket silinmiş'}</div>
+        <div style="font-weight:700; font-size:0.9rem;">${escapeHtml(r.user?.name || 'Silinmiş Üye')} — ${r.package ? r.package.lesson_count + ' Ders' : 'Paket silinmiş'}</div>
         <div style="font-size:0.75rem; color:var(--text-muted);">Durum: ${r.status}${r.package ? ' • ' + formatTry(r.package.price_try) : ''}</div>
       </div>
       ${

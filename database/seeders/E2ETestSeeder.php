@@ -33,7 +33,7 @@ class E2ETestSeeder extends Seeder
             throw new \RuntimeException('E2ETestSeeder must never run outside local/testing.');
         }
 
-        $admin = User::query()->updateOrCreate(
+        $admin = $this->upsertUser(
             ['email' => self::ADMIN_EMAIL],
             [
                 'name' => 'E2E Admin',
@@ -44,7 +44,7 @@ class E2ETestSeeder extends Seeder
         );
         $admin->assignRole('admin');
 
-        $trainerUser = User::query()->updateOrCreate(
+        $trainerUser = $this->upsertUser(
             ['email' => 'e2e-trainer@test.local'],
             [
                 'name' => 'E2E Trainer',
@@ -58,7 +58,7 @@ class E2ETestSeeder extends Seeder
             ['title' => 'E2E Test Trainer', 'avatar_letter' => 'E', 'is_active' => true]
         );
 
-        $member = User::query()->updateOrCreate(
+        $member = $this->upsertUser(
             ['phone' => self::MEMBER_PHONE],
             [
                 'name' => 'E2E Member',
@@ -78,5 +78,20 @@ class E2ETestSeeder extends Seeder
         );
 
         $this->command?->info('E2E fixtures ready: trainer_id='.$trainer->id);
+    }
+
+    /**
+     * Plain updateOrCreate() can't see a soft-deleted row (a prior
+     * E2EResetCommand run, say), so it would crash re-seeding on the unique
+     * email/phone constraint instead of restoring the fixture.
+     */
+    private function upsertUser(array $attributes, array $values): User
+    {
+        $user = User::withTrashed()->firstOrNew($attributes);
+        $user->fill($values);
+        $user->deleted_at = null;
+        $user->save();
+
+        return $user;
     }
 }

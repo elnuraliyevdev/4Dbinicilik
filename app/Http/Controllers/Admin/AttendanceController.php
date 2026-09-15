@@ -34,11 +34,16 @@ class AttendanceController extends Controller
             return response()->json(['message' => 'Bu rezervasyonun yoklaması zaten alınmış.'], 422);
         }
 
-        DB::transaction(function () use ($reservation, $data) {
-            $this->credits->consumePending($reservation);
-            $reservation->update(['status' => $data['status']]);
-            TrainerSlot::where('reservation_id', $reservation->id)->update(['status' => 'available', 'reservation_id' => null]);
-        });
+        try {
+            DB::transaction(function () use ($reservation, $data, $request) {
+                $reservation->lockAndRequireStatus('confirmed', 'Bu rezervasyonun yoklaması zaten alınmış.');
+                $this->credits->consumePending($reservation, 'attendance_consumed', $request->user()->id);
+                $reservation->update(['status' => $data['status']]);
+                TrainerSlot::where('reservation_id', $reservation->id)->update(['status' => 'available', 'reservation_id' => null]);
+            });
+        } catch (\RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
 
         AuthEvent::log('ATTENDANCE_MARKED', 'info', "Admin {$request->user()->name} — yoklama: {$reservation->reservation_code} -> {$data['status']}", [
             'user_id' => $request->user()->id,

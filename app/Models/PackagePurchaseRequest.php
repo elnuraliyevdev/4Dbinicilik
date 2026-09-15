@@ -28,4 +28,20 @@ class PackagePurchaseRequest extends Model
     {
         return $this->belongsTo(User::class, 'reviewed_by');
     }
+
+    /**
+     * Same row-lock-then-recheck pattern as Reservation::lockAndRequireStatus()
+     * — the pre-transaction "is this still pending" check in approve()/reject()
+     * is only a fast optimistic rejection; two concurrent approve() calls on
+     * the same request could otherwise both pass it before either commits,
+     * double-crediting the member's lesson balance.
+     */
+    public function lockAndRequireStatus(string $status, string $message): void
+    {
+        $locked = self::whereKey($this->id)->lockForUpdate()->firstOrFail();
+
+        if ($locked->status !== $status) {
+            throw new \RuntimeException($message);
+        }
+    }
 }

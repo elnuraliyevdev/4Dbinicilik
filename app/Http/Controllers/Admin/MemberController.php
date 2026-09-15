@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Services\CreditLedgerService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 
 class MemberController extends Controller
@@ -90,13 +91,13 @@ class MemberController extends Controller
     {
         abort_unless($member->role === 'member', 404);
 
-        $transaction = $this->credits->adjustIndividual(
+        $transaction = DB::transaction(fn () => $this->credits->adjustIndividual(
             $member,
             $request->validated('delta'),
             'admin_adjustment',
             $request->user()->id,
             $request->validated('note')
-        );
+        ));
 
         AuthEvent::log('CREDIT_ADJUSTED', 'warning', "Admin {$request->user()->name} — {$member->name} bakiyesini {$transaction->delta} ders değiştirdi", [
             'user_id' => $request->user()->id,

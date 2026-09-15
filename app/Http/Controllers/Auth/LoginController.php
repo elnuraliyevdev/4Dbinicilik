@@ -45,6 +45,10 @@ class LoginController extends Controller
             })
             ->first();
 
+        if ($blocked = $this->blockIfAccountLocked($user, $request, 'member', $identifier)) {
+            return $blocked;
+        }
+
         if ($user && $user->password === null) {
             // Legitimate state for freshly-imported legacy members: intentionally not a
             // generic failure, but it never confirms whether the *password* would be right.
@@ -82,7 +86,11 @@ class LoginController extends Controller
 
         $user = $trainer->user;
 
-        if (! $user || ! $user->pin_hash || ! Hash::check($request->string('pin'), $user->pin_hash)) {
+        if ($blocked = $this->blockIfAccountLocked($user, $request, 'trainer', $identifier)) {
+            return $blocked;
+        }
+
+        if (! $trainer->is_active || ! $user || ! $user->pin_hash || ! Hash::check($request->string('pin'), $user->pin_hash)) {
             RateLimiter::hit($key, self::LOCK_SECONDS);
             $this->recordFailure($user, $identifier, 'trainer', $request);
 
@@ -105,6 +113,10 @@ class LoginController extends Controller
             ->where('role', 'admin')
             ->whereRaw('LOWER(email) = ?', [mb_strtolower($email)])
             ->first();
+
+        if ($blocked = $this->blockIfAccountLocked($user, $request, 'admin', $email)) {
+            return $blocked;
+        }
 
         $passwordOk = $user && Hash::check($request->string('password'), $user->password);
         $pinOk = $user && $user->pin_hash && Hash::check($request->string('pin'), $user->pin_hash);
@@ -153,6 +165,35 @@ class LoginController extends Controller
 
         $waitSeconds = RateLimiter::availableIn($key);
         AuthEvent::log('BRUTE_FORCE_BLOCKED', 'danger', "Çok fazla hatalı deneme, hesap {$waitSeconds}sn kilitlendi: [{$identifier}]", [
+            'attempted_identifier' => $identifier,
+            'ip_address' => $request->ip(),
+            'role' => $role,
+        ]);
+
+        return response()->json([
+            'message' => "Çok fazla hatalı deneme. Lütfen {$waitSeconds} saniye sonra tekrar deneyin.",
+        ], 429);
+    }
+
+    /**
+     * The IP-scoped RateLimiter above is keyed on the raw submitted identifier
+     * string, so a member with a known phone/email/ref_code could otherwise
+     * cycle between them for 3x the intended attempt budget before any 429
+     * fires — and an attacker who simply rotates source IP resets that
+     * budget entirely. This is the durable, per-account guard that survives
+     * both: failed_login_attempts/locked_until live on the resolved user row
+     * itself, so they accumulate correctly no matter which identifier or IP
+     * reached it.
+     */
+    private function blockIfAccountLocked(?User $user, Request $request, string $role, string $identifier): ?JsonResponse
+    {
+        if (! $user || ! $user->isLocked()) {
+            return null;
+        }
+
+        $waitSeconds = (int) ceil(now()->diffInSeconds($user->locked_until, false));
+        AuthEvent::log('BRUTE_FORCE_BLOCKED', 'danger', "Hesap kilitli, giriş denemesi engellendi: [{$identifier}]", [
+            'user_id' => $user->id,
             'attempted_identifier' => $identifier,
             'ip_address' => $request->ip(),
             'role' => $role,

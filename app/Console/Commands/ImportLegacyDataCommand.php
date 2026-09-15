@@ -83,7 +83,7 @@ class ImportLegacyDataCommand extends Command
         foreach ($trainers as $t) {
             $pin = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
 
-            $user = User::query()->updateOrCreate(
+            $user = $this->upsertUser(
                 ['name' => $t['name'], 'role' => 'trainer'],
                 ['pin_hash' => Hash::make($pin)]
             );
@@ -106,7 +106,7 @@ class ImportLegacyDataCommand extends Command
         foreach ($members as $m) {
             $role = $m['role'] ?? 'member';
 
-            $user = User::query()->updateOrCreate(
+            $user = $this->upsertUser(
                 ['ref_code' => $m['refCode']],
                 [
                     'name' => $m['name'],
@@ -260,5 +260,20 @@ class ImportLegacyDataCommand extends Command
         $this->horseNameMap[$name] = $horse->id;
 
         return $horse->id;
+    }
+
+    /**
+     * Plain updateOrCreate() can't see a soft-deleted row, so re-running this
+     * import after any of these users was ever soft-deleted would crash on
+     * the unique constraint (name+role, or ref_code) instead of reviving it.
+     */
+    private function upsertUser(array $attributes, array $values): User
+    {
+        $user = User::withTrashed()->firstOrNew($attributes);
+        $user->fill($values);
+        $user->deleted_at = null;
+        $user->save();
+
+        return $user;
     }
 }

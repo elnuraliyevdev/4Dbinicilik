@@ -120,11 +120,16 @@ class ReservationController extends Controller
             ], 422);
         }
 
-        DB::transaction(function () use ($reservation, $request) {
-            $this->credits->refundForReservation($reservation, 'free_cancellation', $request->user()->id);
-            $reservation->update(['status' => 'cancelled', 'cancelled_at' => now()]);
-            TrainerSlot::where('reservation_id', $reservation->id)->update(['status' => 'available', 'reservation_id' => null]);
-        });
+        try {
+            DB::transaction(function () use ($reservation, $request) {
+                $this->lockStillConfirmed($reservation);
+                $this->credits->refundForReservation($reservation, 'free_cancellation', $request->user()->id);
+                $reservation->update(['status' => 'cancelled', 'cancelled_at' => now()]);
+                TrainerSlot::where('reservation_id', $reservation->id)->update(['status' => 'available', 'reservation_id' => null]);
+            });
+        } catch (\RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
 
         AuthEvent::log('RESERVATION_CANCELLED', 'info', "{$request->user()->name} — ücretsiz iptal: {$reservation->reservation_code}", [
             'user_id' => $request->user()->id,
@@ -158,15 +163,20 @@ class ReservationController extends Controller
             return response()->json(['message' => 'Ders saati geçmiş, iptal edilemez.'], 422);
         }
 
-        DB::transaction(function () use ($reservation) {
-            $this->credits->consumePending($reservation);
-            $reservation->update([
-                'status' => 'late_cancelled',
-                'cancelled_at' => now(),
-                'cancellation_reason' => 'Kulüp kuralı gereği 2 saatten az kala iptal edildi, ders hakkı kullanıldı sayıldı.',
-            ]);
-            TrainerSlot::where('reservation_id', $reservation->id)->update(['status' => 'available', 'reservation_id' => null]);
-        });
+        try {
+            DB::transaction(function () use ($reservation, $request) {
+                $this->lockStillConfirmed($reservation);
+                $this->credits->consumePending($reservation, 'late_cancellation', $request->user()->id);
+                $reservation->update([
+                    'status' => 'late_cancelled',
+                    'cancelled_at' => now(),
+                    'cancellation_reason' => 'Kulüp kuralı gereği 2 saatten az kala iptal edildi, ders hakkı kullanıldı sayıldı.',
+                ]);
+                TrainerSlot::where('reservation_id', $reservation->id)->update(['status' => 'available', 'reservation_id' => null]);
+            });
+        } catch (\RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
 
         AuthEvent::log('LATE_CANCELLATION', 'warning', "{$request->user()->name} — geç iptal (ders hakkı düşüldü): {$reservation->reservation_code}", [
             'user_id' => $request->user()->id,
@@ -179,5 +189,10 @@ class ReservationController extends Controller
     private function authorizeOwnership(Request $request, Reservation $reservation): void
     {
         abort_unless($reservation->user_id === $request->user()->id || $request->user()->role === 'admin', 403);
+    }
+
+    private function lockStillConfirmed(Reservation $reservation): void
+    {
+        $reservation->lockAndRequireStatus('confirmed', 'Bu rezervasyon zaten aktif değil.');
     }
 }
