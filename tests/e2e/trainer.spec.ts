@@ -1,4 +1,4 @@
-import { test, expect, MEMBER_PHONE, TRAINER_PIN, PASSWORD } from './fixtures';
+import { test, expect, MEMBER_PHONE, TRAINER_PIN, PASSWORD, todayLocalDateString } from './fixtures';
 
 test.describe('Trainer flow', () => {
   test('PIN login → see today\'s roster → mark attendance → add feedback note', async ({ page, request, baseURL }) => {
@@ -22,7 +22,7 @@ test.describe('Trainer flow', () => {
     // token is now stale, so switch to the one the login response hands back.
     token = (await loginRes.json()).csrf_token;
 
-    const today = new Date().toISOString().slice(0, 10);
+    const today = todayLocalDateString();
     const bookRes = await request.post('/member/reservations', {
       headers: { 'X-CSRF-TOKEN': token, Accept: 'application/json' },
       data: { trainer_id: trainer.id, date: today, time: '11:00' },
@@ -35,7 +35,7 @@ test.describe('Trainer flow', () => {
 
     // --- Real UI trainer login ---
     await page.goto('/');
-    await page.getByRole('button', { name: '🎯Antrenör' }).click();
+    await page.getByRole('button', { name: '🎯 Antrenör' }).click();
     await page.locator('#gwTrainerSelect').selectOption(String(trainer.id));
     await page.locator('#gwTrainerPass').fill(TRAINER_PIN);
     await page.getByRole('button', { name: /Antrenör Seans Masasına Gir/ }).click();

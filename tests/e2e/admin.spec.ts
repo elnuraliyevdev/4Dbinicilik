@@ -31,7 +31,7 @@ test.describe('Admin flow', () => {
 
     // --- Real UI admin login (email + password + PIN) ---
     await page.goto('/');
-    await page.getByRole('button', { name: '👑Yönetici' }).click();
+    await page.getByRole('button', { name: '👑 Yönetici' }).click();
     await page.locator('#gwAdminUser').fill(ADMIN_EMAIL);
     await page.locator('#gwAdminPass').fill(PASSWORD);
     await page.locator('#gwAdminPin').fill(ADMIN_PIN);

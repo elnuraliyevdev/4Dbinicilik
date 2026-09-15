@@ -22,7 +22,7 @@ test.describe('Member flow', () => {
 
     // Booking succeeded → dashboard shown, credit balance dropped by 1.
     await expect(page.locator('#statRemaining')).toHaveText('9', { timeout: 10_000 });
-    await expect(page.locator('#activeLessonsList')).toContainText('Manej Binicilik Dersi');
+    await expect(page.locator('#activeLessonsList')).toContainText('Manej Biniş Dersi');
 
     // --- Cancel it (outside the 2h window since the slot is a future date) ---
     page.once('dialog', (dialog) => dialog.accept());
