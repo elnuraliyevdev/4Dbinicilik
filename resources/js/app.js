@@ -180,22 +180,40 @@ async function loadTrainerLoginOptions() {
 // ─── ROLE / NAV UI ─────────────────────────────────────────────────────────────
 function updateRoleUI() {
   const badgeBtn = document.getElementById('roleBadgeBtn');
-  const adminNavDesktop = document.getElementById('navItemAdmin');
-  const adminNavMobile = document.getElementById('navMobileAdmin');
-  const role = session.user?.role;
+  const role = session.user?.role || 'member';
+
+  // Toggle role-scoped navigation elements (both desktop and mobile)
+  document.querySelectorAll('.nav-role-member').forEach((el) => {
+    el.style.display = role === 'member' ? 'flex' : 'none';
+  });
+  document.querySelectorAll('.nav-role-trainer').forEach((el) => {
+    el.style.display = role === 'trainer' ? 'flex' : 'none';
+  });
+  document.querySelectorAll('.nav-role-admin').forEach((el) => {
+    el.style.display = role === 'admin' ? 'flex' : 'none';
+  });
+
+  // Shared elements (e.g. availability calendar and profile are accessible)
+  const availDesktop = document.getElementById('navItemAvailability');
+  const availMobile = document.getElementById('navMobileAvailability');
+  if (availDesktop) availDesktop.style.display = 'flex';
+  if (availMobile) availMobile.style.display = 'flex';
 
   if (role === 'admin') {
     if (badgeBtn) { badgeBtn.innerHTML = '👑 Admin Modu'; badgeBtn.style.background = '#FEF3C7'; badgeBtn.style.color = '#B45309'; }
-    if (adminNavDesktop) adminNavDesktop.style.display = 'flex';
-    if (adminNavMobile) adminNavMobile.style.display = 'flex';
+    if (currentView === 'dashboard' || currentView === 'trainer') {
+      switchView('admin');
+    }
   } else if (role === 'trainer') {
     if (badgeBtn) { badgeBtn.innerHTML = '🎯 Eğitmen Modu'; badgeBtn.style.background = '#EFF6FF'; badgeBtn.style.color = '#1D4ED8'; }
-    if (adminNavDesktop) adminNavDesktop.style.display = 'none';
-    if (adminNavMobile) adminNavMobile.style.display = 'none';
+    if (currentView === 'dashboard' || currentView === 'admin' || currentView === 'packages' || currentView === 'history') {
+      switchView('trainer');
+    }
   } else {
     if (badgeBtn) { badgeBtn.innerHTML = '👤 Üye Portalı'; badgeBtn.style.background = 'var(--gold-gradient)'; badgeBtn.style.color = 'var(--primary-dark)'; }
-    if (adminNavDesktop) adminNavDesktop.style.display = 'none';
-    if (adminNavMobile) adminNavMobile.style.display = 'none';
+    if (currentView === 'admin' || currentView === 'trainer') {
+      switchView('dashboard');
+    }
   }
 }
 
@@ -203,12 +221,19 @@ function updateRoleUI() {
 let currentView = 'dashboard';
 
 function switchView(viewName) {
-  if (viewName === 'admin' && session.user?.role !== 'admin') {
+  const role = session.user?.role || 'member';
+
+  // Strict RBAC View Guards
+  if (viewName === 'admin' && role !== 'admin') {
     showToast('⛔ Bu panel için yönetici yetkisi gereklidir.', 'danger');
     return;
   }
-  if (viewName === 'trainer' && !['trainer', 'admin'].includes(session.user?.role)) {
+  if (viewName === 'trainer' && !['trainer', 'admin'].includes(role)) {
     showToast('⛔ Bu panel yalnızca antrenörlere açıktır.', 'danger');
+    return;
+  }
+  if (role === 'trainer' && ['packages', 'dashboard', 'history'].includes(viewName)) {
+    showToast('⛔ Antrenör hesabı bu alana erişemez.', 'warning');
     return;
   }
 
@@ -219,8 +244,8 @@ function switchView(viewName) {
   document.querySelectorAll('.mobile-nav-item').forEach((el) => el.classList.remove('active'));
 
   document.getElementById(`view-${viewName}`)?.classList.add('active');
-  document.querySelector(`.nav-item[data-view="${viewName}"]`)?.classList.add('active');
-  document.querySelector(`.mobile-nav-item[data-view="${viewName}"]`)?.classList.add('active');
+  document.querySelectorAll(`.nav-item[data-view="${viewName}"]`).forEach((el) => el.classList.add('active'));
+  document.querySelectorAll(`.mobile-nav-item[data-view="${viewName}"]`).forEach((el) => el.classList.add('active'));
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
   loadCurrentView();

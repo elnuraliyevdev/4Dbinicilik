@@ -270,20 +270,25 @@
 
       <!-- Desktop Navigation -->
       <nav class="nav-desktop">
-        <div class="nav-item active" data-view="dashboard" onclick="switchView('dashboard')">
+        <!-- Member Links -->
+        <div class="nav-item nav-role-member active" id="navItemDashboard" data-view="dashboard" onclick="switchView('dashboard')">
           <span>📊</span> Dashboard
         </div>
-        <div class="nav-item" data-view="availability" onclick="switchView('availability')">
-          <span>📅</span> Eğitmen Takvimi
+        <div class="nav-item nav-role-member nav-role-trainer nav-role-admin" id="navItemAvailability" data-view="availability" onclick="switchView('availability')">
+          <span>📅</span> Seans Takvimi
         </div>
-        <div class="nav-item" data-view="packages" onclick="switchView('packages')">
-          <span>💳</span> Paketler
+        <div class="nav-item nav-role-member" id="navItemPackages" data-view="packages" onclick="switchView('packages')">
+          <span>💳</span> Paketler & Safari
         </div>
-        <div class="nav-item" data-view="history" onclick="switchView('history')">
+        <div class="nav-item nav-role-member" id="navItemHistory" data-view="history" onclick="switchView('history')">
           <span>📜</span> Geçmiş
         </div>
-        <!-- Admin Navigation Link -->
-        <div class="nav-item" id="navItemAdmin" data-view="admin" onclick="switchView('admin')" style="color:var(--gold-light); font-weight:700;">
+        <!-- Trainer Link -->
+        <div class="nav-item nav-role-trainer" id="navItemTrainer" data-view="trainer" onclick="switchView('trainer')" style="display:none; color:var(--gold-light); font-weight:700;">
+          <span>🎯</span> Antrenör Masası
+        </div>
+        <!-- Admin Link -->
+        <div class="nav-item nav-role-admin" id="navItemAdmin" data-view="admin" onclick="switchView('admin')" style="display:none; color:var(--gold-light); font-weight:700;">
           <span>👑</span> Admin Paneli
         </div>
       </nav>
@@ -1287,23 +1292,27 @@
          MOBILE BOTTOM NAVIGATION (PWA)
          ==================================================================== -->
   <nav class="mobile-nav">
-    <div class="mobile-nav-item active" data-view="dashboard" onclick="switchView('dashboard')">
+    <div class="mobile-nav-item nav-role-member active" id="navMobileDashboard" data-view="dashboard" onclick="switchView('dashboard')">
       <span class="icon">📊</span>
       <span>Dashboard</span>
     </div>
-    <div class="mobile-nav-item" data-view="availability" onclick="switchView('availability')">
+    <div class="mobile-nav-item nav-role-member nav-role-trainer nav-role-admin" id="navMobileAvailability" data-view="availability" onclick="switchView('availability')">
       <span class="icon">📅</span>
-      <span>Eğitmenler</span>
+      <span>Takvim</span>
     </div>
-    <div class="mobile-nav-item" data-view="packages" onclick="switchView('packages')">
+    <div class="mobile-nav-item nav-role-member" id="navMobilePackages" data-view="packages" onclick="switchView('packages')">
       <span class="icon">💳</span>
       <span>Paketler</span>
     </div>
-    <div class="mobile-nav-item" id="navMobileAdmin" data-view="admin" onclick="switchView('admin')" style="color:var(--gold-light);">
+    <div class="mobile-nav-item nav-role-trainer" id="navMobileTrainer" data-view="trainer" onclick="switchView('trainer')" style="display:none; color:var(--gold-light);">
+      <span class="icon">🎯</span>
+      <span>Antrenör</span>
+    </div>
+    <div class="mobile-nav-item nav-role-admin" id="navMobileAdmin" data-view="admin" onclick="switchView('admin')" style="display:none; color:var(--gold-light);">
       <span class="icon">👑</span>
       <span>Admin</span>
     </div>
-    <div class="mobile-nav-item" data-view="profile" onclick="switchView('profile')">
+    <div class="mobile-nav-item nav-role-member nav-role-trainer nav-role-admin" data-view="profile" onclick="switchView('profile')">
       <span class="icon">👤</span>
       <span>Profil</span>
     </div>
