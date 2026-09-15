@@ -1490,7 +1490,7 @@ async function loadAdminAuditLog() {
     const events = data.events.data || [];
 
     document.getElementById('secStatLogins').innerText = `${events.filter((e) => e.event_type === 'AUTH_SUCCESS').length} Oturum`;
-    document.getElementById('secStatBlocked').innerText = `${events.filter((e) => e.severity === 'danger').length} Tehdit`;
+    document.getElementById('secStatBlocked').innerText = `${events.filter((e) => e.severity === 'danger').length} Kayıt`;
 
     if (events.length === 0) {
       container.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:1.5rem; color:var(--text-muted);">Kayıtlı güvenlik olayı bulunamadı.</td></tr>`;

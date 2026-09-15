@@ -1062,20 +1062,20 @@
         <!-- 4 Security KPI Stats -->
         <div class="stat-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom:1.5rem;">
           <div class="sec-stat-box">
-            <span class="label">🛡️ Güvenlik Kalkanı & WAF</span>
-            <span class="val" style="color:var(--success);">AKTİF (Seviye 5)</span>
+            <span class="label">🛡️ Erişim Güvenliği</span>
+            <span class="val" style="color:var(--success);">Aktif (Rol Bazlı + Rate Limit)</span>
           </div>
           <div class="sec-stat-box">
             <span class="label">🔑 Başarılı Oturumlar (24S)</span>
             <span class="val" id="secStatLogins">48 Oturum</span>
           </div>
           <div class="sec-stat-box">
-            <span class="label">🚫 Engellenen XSS / Brute-Force</span>
-            <span class="val" id="secStatBlocked" style="color:#EF4444;">16 Tehdit</span>
+            <span class="label">🚫 Başarısız / Kilitlenen Girişler</span>
+            <span class="val" id="secStatBlocked" style="color:#EF4444;">16 Kayıt</span>
           </div>
           <div class="sec-stat-box">
-            <span class="label">⚖️ RBAC İzolasyon Doğrulaması</span>
-            <span class="val" style="color:var(--gold-dark);">%100 Güvenli</span>
+            <span class="label">⚖️ Rol İzolasyonu (RBAC)</span>
+            <span class="val" style="color:var(--gold-dark);">3 Rol Aktif</span>
           </div>
         </div>
 
@@ -1092,7 +1092,7 @@
             </div>
           </div>
           <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">
-            Aşağıdaki sistem; kimlik doğrulama anomalilerini, brute-force denemelerini, XSS script enjeksiyonlarını, parametre tahrifatlarını ve yetkisiz rol atlama (RBAC privilege escalation) girişimlerini gerçek zamanlı olarak yakalar ve izole eder.
+            Aşağıdaki günlük; başarılı/başarısız giriş denemelerini, hesap kilitlenmelerini ve yetkisiz panel erişim denemelerini kayıt altına alır.
           </p>
         </div>
 
