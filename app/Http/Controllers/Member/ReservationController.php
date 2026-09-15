@@ -86,7 +86,7 @@ class ReservationController extends Controller
             return response()->json(['message' => $e->getMessage()], 409);
         }
 
-        AuthEvent::log('RESERVATION_CREATED', 'info', "{$user->name} — {$reservation->activity_label} ({$reservation->date->toDateString()} {$reservation->time})", [
+        AuthEvent::log('RESERVATION_CREATED', 'info', "{$user->name} — {$reservation->activity_label} ({$reservation->date} {$reservation->time})", [
             'user_id' => $user->id,
             'role' => $user->role,
         ]);

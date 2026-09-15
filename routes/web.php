@@ -5,6 +5,10 @@ use App\Http\Controllers\Member\AvailabilityController;
 use App\Http\Controllers\Member\PackageController;
 use App\Http\Controllers\Member\ReservationController;
 use App\Http\Controllers\Member\SafariController;
+use App\Http\Controllers\Trainer\AttendanceController;
+use App\Http\Controllers\Trainer\FeedbackController;
+use App\Http\Controllers\Trainer\ScheduleController;
+use App\Http\Controllers\Trainer\SlotController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -36,7 +40,10 @@ Route::middleware(['auth', 'role:member|admin'])->prefix('member')->group(functi
 });
 
 Route::middleware(['auth', 'role:trainer|admin'])->prefix('trainer')->group(function () {
-    //
+    Route::get('/schedule', [ScheduleController::class, 'index'])->name('trainer.schedule');
+    Route::post('/reservations/{reservation}/attendance', [AttendanceController::class, 'store'])->name('trainer.attendance');
+    Route::post('/feedback', [FeedbackController::class, 'store'])->name('trainer.feedback');
+    Route::post('/slots/toggle', [SlotController::class, 'toggle'])->name('trainer.slots.toggle');
 });
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {

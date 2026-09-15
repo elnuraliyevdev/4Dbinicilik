@@ -18,7 +18,10 @@ class Reservation extends Model
     protected function casts(): array
     {
         return [
-            'date' => 'date',
+            // Deliberately NOT cast to 'date' — Eloquent's date cast round-trips
+            // through a full datetime on write for some drivers, which breaks
+            // exact-string where()/firstOrCreate() matching against 'Y-m-d'.
+            // Kept as a plain 'Y-m-d' string throughout the app instead.
             'price_try' => 'decimal:2',
             'cancelled_at' => 'datetime',
         ];
@@ -63,6 +66,6 @@ class Reservation extends Model
 
     public function startsAt(): Carbon
     {
-        return Carbon::parse($this->date->format('Y-m-d').' '.$this->time);
+        return Carbon::parse($this->date.' '.$this->time);
     }
 }

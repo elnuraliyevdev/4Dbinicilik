@@ -9,10 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable(['trainer_id', 'date', 'time', 'status', 'reservation_id'])]
 class TrainerSlot extends Model
 {
-    protected function casts(): array
-    {
-        return ['date' => 'date'];
-    }
+    // Deliberately no 'date' cast — see Reservation model for why (breaks
+    // exact-string where()/firstOrCreate() matching against 'Y-m-d').
 
     public function trainer(): BelongsTo
     {
