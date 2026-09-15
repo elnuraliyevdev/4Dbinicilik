@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             RolePermissionSeeder::class,
             ClubSettingsSeeder::class,
             AdminUserSeeder::class,
+            PackageAndSafariSeeder::class,
         ]);
     }
 }
