@@ -152,6 +152,8 @@ async function submitGatewayLogin(role) {
 }
 
 async function logoutToGateway() {
+  closeModal('quickBookingModal');
+  closeModal('safariModal');
   try {
     await API.post('/logout');
   } catch (e) {
@@ -349,8 +351,24 @@ async function handleLateCancellation(id) {
   }
 }
 
+// ─── DATE HELPERS (TIMEZONE-SAFE EUROPE/ISTANBUL) ──────────────────────────────
+function getLocalTodayString() {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function formatLocalDate(d) {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 // ─── MEMBER: CALENDAR & AVAILABILITY ────────────────────────────────────────────
-let selectedDate = new Date().toISOString().slice(0, 10);
+let selectedDate = getLocalTodayString();
 let selectedSlot = null;
 let selectedTrainerId = null;
 let selectedTrainerName = null;
@@ -361,10 +379,17 @@ function renderCalendar() {
 
   const base = new Date();
   let html = '';
+
+  // Calculate day-of-week offset (0: Monday, 6: Sunday) for the starting date
+  const startDayOfWeek = (base.getDay() + 6) % 7;
+  for (let pad = 0; pad < startDayOfWeek; pad++) {
+    html += `<div class="day-cell disabled empty" style="opacity:0.2; pointer-events:none;"></div>`;
+  }
+
   for (let d = 0; d < 30; d++) {
     const date = new Date(base);
     date.setDate(base.getDate() + d);
-    const dateStr = date.toISOString().slice(0, 10);
+    const dateStr = formatLocalDate(date);
     const isMonday = date.getDay() === 1;
     const isSelected = dateStr === selectedDate;
 
@@ -428,7 +453,7 @@ function renderMatrixDateButtons() {
   for (let d = 0; d < 3; d++) {
     const date = new Date();
     date.setDate(date.getDate() + d);
-    const dateStr = date.toISOString().slice(0, 10);
+    const dateStr = formatLocalDate(date);
     const dayLabel = date.toLocaleDateString('tr-TR', { day: '2-digit', month: 'short' });
     const active = dateStr === selectedDate ? ' active' : '';
     html += `<button class="filter-chip matrix-date-btn${active}" onclick="setMatrixDate('${dateStr}', this)">${labels[d]} (${dayLabel})</button>`;
@@ -483,7 +508,7 @@ function renderTrainerMatrix(data) {
           } else if (slot.status === 'busy') {
             return `<span class="slot-tag busy" title="Dolu">🔴 ${slot.time} (Dolu)</span>`;
           }
-          return `<span class="slot-tag off" title="İzinli">⚪ ${slot.time} (İzinli)</span>`;
+          return `<span class="slot-tag off" title="Müsait Değil">⚪ ${slot.time} (Kapalı)</span>`;
         })
         .join('');
 
@@ -522,11 +547,18 @@ async function confirmLessonBooking() {
     if (!confirm('Bireysel ders krediniz görünmüyor, aile havuzunuz varsa oradan düşülecek. Devam edilsin mi?')) return;
   }
 
+  const activityLabel = document.getElementById('quickModalActivityType')?.value || '🏇 Standart Manej Biniş Dersi (45 Dk)';
+  const horseId = document.getElementById('quickModalHorse')?.value || null;
+  const submitBtn = document.querySelector('#quickBookingModal button.btn-gold');
+  if (submitBtn) { submitBtn.disabled = true; submitBtn.innerText = 'İşleniyor...'; }
+
   try {
     const res = await API.post('/member/reservations', {
       trainer_id: selectedTrainerId,
       date: selectedDate,
       time: selectedSlot,
+      activity_label: activityLabel,
+      horse_id: horseId ? parseInt(horseId) : null,
     });
     closeModal('quickBookingModal');
     showToast(`🎉 Rezervasyonunuz (${selectedDate} ${selectedSlot}) oluşturuldu!`);
@@ -538,6 +570,8 @@ async function confirmLessonBooking() {
     switchView('dashboard');
   } catch (e) {
     showToast(e.message, 'danger');
+  } finally {
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = 'Rezervasyonu Onayla'; }
   }
 }
 
@@ -607,7 +641,8 @@ async function buyPackage(packageId) {
     await API.post('/member/packages/request', { package_id: packageId });
     showToast('✓ Paket talebiniz oluşturuldu, admin onayı bekleniyor.');
 
-    const msg = `Merhaba, bir paket satın alma talebi oluşturdum, kulüpte ödeme yapacağım. (Üye: ${session.user.name})`;
+    const userName = session.user?.name || 'Kulüp Üyesi';
+    const msg = `Merhaba, bir paket satın alma talebi oluşturdum, kulüpte ödeme yapacağım. (Üye: ${userName})`;
     window.open(`https://wa.me/${CLUB_WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
   } catch (e) {
     showToast(e.message, 'danger');
@@ -619,20 +654,20 @@ function openSafariModal(tourId) {
   if (!selectedSafariTour) return;
   document.getElementById('safariModalTitle').innerText = selectedSafariTour.name;
   const dateInput = document.getElementById('safariDate');
-  if (dateInput) dateInput.value = new Date().toISOString().slice(0, 10);
+  if (dateInput) dateInput.value = getLocalTodayString();
   updateSafariPrice();
   openModal('safariModal');
 }
 
 function updateSafariPrice() {
-  const count = parseInt(document.getElementById('safariPax').value) || 1;
+  const count = parseInt(document.getElementById('safariPax')?.value) || 1;
   const total = count * parseFloat(selectedSafariTour?.price_per_person || 0);
   const el = document.getElementById('safariTotalPrice');
   if (el) el.innerText = formatTry(total);
 }
 
 async function confirmSafariBooking() {
-  const count = parseInt(document.getElementById('safariPax').value) || 1;
+  const count = parseInt(document.getElementById('safariPax')?.value) || 1;
   const date = document.getElementById('safariDate')?.value;
   const time = document.getElementById('safariTime')?.value;
 
@@ -640,6 +675,9 @@ async function confirmSafariBooking() {
     alert('Lütfen safari tarihi ve saati seçiniz.');
     return;
   }
+
+  const submitBtn = document.querySelector('#safariModal button.btn-gold');
+  if (submitBtn) { submitBtn.disabled = true; submitBtn.innerText = 'İşleniyor...'; }
 
   try {
     const res = await API.post('/member/safari-tours/book', {
@@ -657,6 +695,8 @@ async function confirmSafariBooking() {
     switchView('dashboard');
   } catch (e) {
     showToast(e.message, 'danger');
+  } finally {
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = 'Rezervasyonu Onayla'; }
   }
 }
 
@@ -702,16 +742,18 @@ function renderUserProfile() {
   if (!u) return;
 
   const set = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
+  const safeName = u.name || 'Misafir';
+  const initial = (safeName.trim().charAt(0) || '?').toUpperCase();
 
-  set('profileName', u.name);
+  set('profileName', safeName);
   set('profileEmail', u.email || '—');
-  set('profileAvatar', u.name.charAt(0));
-  set('cardHolderName', u.name);
+  set('profileAvatar', initial);
+  set('cardHolderName', safeName);
   set('cardRefCode', `REF: ${u.ref_code || '—'}`);
   set('cardRemainingCredits', `${u.remaining_lessons || 0} Ders`);
-  set('navUserName', u.name.split(' ')[0]);
+  set('navUserName', safeName.split(' ')[0] || safeName);
   set('navUserRef', u.role === 'admin' ? '👑 Admin' : `Ref: ${u.ref_code || '—'}`);
-  set('navUserAvatar', u.name.charAt(0));
+  set('navUserAvatar', initial);
 
   const badgeEl = document.getElementById('profileRefBadge');
   if (badgeEl) badgeEl.innerText = `Referans Kodun: ${u.ref_code || '—'}`;
@@ -722,7 +764,7 @@ let cachedTrainerReservations = [];
 
 async function loadTrainerSchedule() {
   try {
-    const data = await API.get(`/trainer/schedule?date=${new Date().toISOString().slice(0, 10)}`);
+    const data = await API.get(`/trainer/schedule?date=${getLocalTodayString()}`);
     cachedTrainerReservations = data.reservations || [];
 
     const set = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
@@ -979,7 +1021,7 @@ async function loadAdminTrainers() {
   if (!container) return;
 
   try {
-    const data = await API.get(`/member/availability?date=${new Date().toISOString().slice(0, 10)}`);
+    const data = await API.get(`/member/availability?date=${getLocalTodayString()}`);
     const trainers = data.trainers || [];
     document.getElementById('adminTrainersActiveCount').innerText = `${trainers.length} Eğitmen Aktif`;
 
@@ -1375,7 +1417,7 @@ async function loadAdminAuditLog() {
         const badge = { success: ['success', 'BAŞARILI'], warning: ['warning', 'UYARI'], danger: ['danger', 'TEHDİT'] }[l.severity] || ['info', 'BİLGİ'];
         return `
         <tr>
-          <td style="font-family:monospace; font-size:0.75rem; color:var(--text-muted);">${l.created_at}</td>
+          <td style="font-family:monospace; font-size:0.75rem; color:var(--text-muted);">${new Date(l.created_at).toLocaleString('tr-TR')}</td>
           <td style="font-family:monospace; font-size:0.75rem;">${escapeHtml(l.ip_address || '—')}</td>
           <td><div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">${escapeHtml(l.role || '—')}</div></td>
           <td><span style="font-family:monospace; font-weight:700; font-size:0.75rem; color:var(--primary);">${escapeHtml(l.event_type)}</span></td>
@@ -1427,10 +1469,31 @@ function showToast(msg, type = 'success') {
   const toast = document.createElement('div');
   toast.className = 'toast';
   if (type === 'danger') toast.style.borderLeftColor = '#EF4444';
+  if (type === 'warning') toast.style.borderLeftColor = '#F59E0B';
+  toast.style.cursor = 'pointer';
+  toast.title = 'Kapatmak için tıklayın';
   toast.innerText = msg;
 
+  toast.addEventListener('click', () => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 200);
+  });
+
   container.appendChild(toast);
-  setTimeout(() => toast.remove(), 4000);
+  setTimeout(() => {
+    if (toast.parentElement) {
+      toast.style.opacity = '0';
+      setTimeout(() => toast.remove(), 200);
+    }
+  }, 4000);
+}
+
+function debounce(fn, delay = 250) {
+  let timer = null;
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), delay);
+  };
 }
 
 function formatTry(amount) {
@@ -1517,8 +1580,16 @@ document.addEventListener('DOMContentLoaded', () => {
   bootstrapSession();
   loadTrainerLoginOptions();
 
-  document.getElementById('safariPax')?.addEventListener('change', updateSafariPrice);
-  document.getElementById('adminMemberSearch')?.addEventListener('input', () => loadAdminMembers());
+  const safariPaxEl = document.getElementById('safariPax');
+  if (safariPaxEl) {
+    safariPaxEl.addEventListener('change', updateSafariPrice);
+    safariPaxEl.addEventListener('input', updateSafariPrice);
+  }
+
+  const memberSearchEl = document.getElementById('adminMemberSearch');
+  if (memberSearchEl) {
+    memberSearchEl.addEventListener('input', debounce(() => loadAdminMembers(), 250));
+  }
 
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js').catch(() => {});

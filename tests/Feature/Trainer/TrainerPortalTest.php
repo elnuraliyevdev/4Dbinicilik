@@ -139,7 +139,7 @@ class TrainerPortalTest extends TestCase
         $trainer = $this->trainer();
         $member = User::factory()->create(['role' => 'member', 'remaining_lessons' => 5]);
         $member->assignRole('member');
-        $date = now()->isMonday() ? now()->addDay()->toDateString() : now()->toDateString();
+        $date = now()->tomorrow()->isMonday() ? now()->tomorrow()->addDay()->toDateString() : now()->tomorrow()->toDateString();
 
         $toggle = $this->actingAs($trainer->user)->postJson('/trainer/slots/toggle', [
             'date' => $date,

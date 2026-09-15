@@ -31,7 +31,7 @@ class BookingCreditPriorityTest extends TestCase
 
     private function bookingPayload(Trainer $trainer): array
     {
-        $date = Carbon::now()->isMonday() ? Carbon::now()->addDay() : Carbon::now();
+        $date = Carbon::tomorrow()->isMonday() ? Carbon::tomorrow()->addDay() : Carbon::tomorrow();
 
         return [
             'trainer_id' => $trainer->id,

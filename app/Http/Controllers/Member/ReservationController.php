@@ -36,9 +36,15 @@ class ReservationController extends Controller
     {
         $user = $request->user();
         $date = Carbon::parse($request->validated('date'));
+        $time = $request->validated('time');
 
-        if (ClubSetting::get('monday_closed') && $date->isMonday()) {
+        $mondayClosed = filter_var(ClubSetting::get('monday_closed', true), FILTER_VALIDATE_BOOLEAN);
+        if ($mondayClosed && $date->isMonday()) {
             return response()->json(['message' => 'Pazartesi günleri kulüp kapalıdır.'], 422);
+        }
+
+        if ($date->isToday() && Carbon::parse($date->toDateString().' '.$time)->isPast()) {
+            return response()->json(['message' => 'Geçmiş saatteki bir seans için rezervasyon yapılamaz.'], 422);
         }
 
         $trainer = Trainer::findOrFail($request->validated('trainer_id'));

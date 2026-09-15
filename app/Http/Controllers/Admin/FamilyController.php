@@ -55,7 +55,17 @@ class FamilyController extends Controller
     {
         abort_unless($familyMember->family_id === $family->id, 404);
 
+        $wasPrimary = $familyMember->is_primary || $family->primary_user_id === $familyMember->user_id;
+
         $familyMember->delete();
+
+        if ($wasPrimary) {
+            $nextMember = $family->members()->first();
+            $family->update(['primary_user_id' => $nextMember?->user_id]);
+            if ($nextMember) {
+                $nextMember->update(['is_primary' => true]);
+            }
+        }
 
         AuthEvent::log('FAMILY_MEMBER_REMOVED', 'info', "Admin {$request->user()->name} — {$family->name} grubundan üye çıkardı", [
             'user_id' => $request->user()->id,

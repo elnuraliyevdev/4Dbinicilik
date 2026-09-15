@@ -8,7 +8,7 @@
 
   <!-- PWA Settings -->
   <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#1B3B2F">
+  <meta name="theme-color" content="#0B1914">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="4D Binicilik">
@@ -1200,11 +1200,11 @@
           </div>
           <div class="form-group">
             <label class="form-label">Biniş Disiplini & Seviye</label>
-            <select class="form-control">
-              <option>Temel Denge & Oturuş (Manejde Başarılı)</option>
-              <option>Tırıs & Kenter Geçişleri (Stabil)</option>
-              <option>Engel Atlama Giriş (60cm)</option>
-              <option>Safari Biniş Uygunluğu (Onaylandı)</option>
+            <select class="form-control" id="trainerDisciplineSelect">
+              <option value="Temel Denge & Oturuş">Temel Denge & Oturuş (Manejde Başarılı)</option>
+              <option value="Tırıs & Kenter Geçişleri">Tırıs & Kenter Geçişleri (Stabil)</option>
+              <option value="Engel Atlama Giriş (60cm)">Engel Atlama Giriş (60cm)</option>
+              <option value="Safari Biniş Uygunluğu">Safari Biniş Uygunluğu (Onaylandı)</option>
             </select>
           </div>
           <div class="form-group">
@@ -1223,7 +1223,7 @@
   <!-- ====================================================================
          QUICK BOOKING MODAL
          ==================================================================== -->
-  <div class="modal-overlay" id="quickBookingModal">
+  <div class="modal-overlay" id="quickBookingModal" onclick="if(event.target===this)closeModal('quickBookingModal')">
     <div class="modal-box">
       <div class="modal-header">
         <div class="modal-title">Hızlı Seans Rezervasyonu</div>
@@ -1232,7 +1232,7 @@
 
       <div style="background:var(--bg-page); padding:0.85rem 1rem; border-radius:var(--radius-sm); margin-bottom:1rem; border-left:4px solid var(--gold);">
         <span style="font-size:0.8rem; color:var(--text-muted);">Seçilen Seans:</span>
-        <div style="font-weight:700; color:var(--primary-dark); font-size:1rem;" id="bookingModalDate">2026-09-02 saat 09:00</div>
+        <div style="font-weight:700; color:var(--primary-dark); font-size:1rem;" id="bookingModalDate">—</div>
       </div>
 
       <div class="form-group">
@@ -1243,18 +1243,20 @@
       <div class="form-group">
         <label class="form-label">Aktivite Türü</label>
         <select class="form-control" id="quickModalActivityType">
-          <option value="manej" selected>🏇 Standart Manej Biniş Dersi (45 Dk)</option>
-          <option value="safari">🌲 Doğa & Orman Safarisi (Ders Hakkı Yerine)</option>
+          <option value="🏇 Standart Manej Biniş Dersi (45 Dk)" selected>🏇 Standart Manej Biniş Dersi (45 Dk)</option>
+          <option value="🌲 Doğa & Orman Safarisi">🌲 Doğa & Orman Safarisi (Ders Hakkı Yerine)</option>
+          <option value="🏆 İleri Seviye Engel Atlama">🏆 İleri Seviye Engel Atlama</option>
         </select>
       </div>
 
       <div class="form-group">
         <label class="form-label">At Tercihi</label>
-        <select class="form-control">
-          <option>Rüzgar (Arap Atı)</option>
-          <option>Fırtına (İngiliz)</option>
-          <option>Poyraz (Haflinger)</option>
-          <option>Şimşek (Friesian)</option>
+        <select class="form-control" id="quickModalHorse">
+          <option value="">🐴 Kulüp Tarafından Belirlensin (Önerilen)</option>
+          <option value="1">Rüzgar (Arap Atı)</option>
+          <option value="2">Fırtına (İngiliz)</option>
+          <option value="3">Poyraz (Haflinger)</option>
+          <option value="4">Şimşek (Friesian)</option>
         </select>
       </div>
 
@@ -1267,7 +1269,7 @@
   <!-- ====================================================================
          SAFARI MODAL WIZARD
          ==================================================================== -->
-  <div class="modal-overlay" id="safariModal">
+  <div class="modal-overlay" id="safariModal" onclick="if(event.target===this)closeModal('safariModal')">
     <div class="modal-box">
       <div class="modal-header">
         <div class="modal-title" id="safariModalTitle">Safari Turu Rezervasyonu</div>
@@ -1288,22 +1290,22 @@
 
       <div class="form-group">
         <label class="form-label">Tur Tarihi</label>
-        <input type="date" class="form-control" id="safariDate" value="2026-09-05">
+        <input type="date" class="form-control" id="safariDate">
       </div>
 
       <div class="form-group">
         <label class="form-label">Başlangıç Saati</label>
         <select class="form-control" id="safariTime">
-          <option>09:30 (Sabah Orman Turu)</option>
-          <option selected>11:00 (Öğle Doğa Turu)</option>
-          <option>15:30 (Öğleden Sonra)</option>
-          <option>17:30 (Gün Batımı Golden Hour)</option>
+          <option value="09:30">09:30 (Sabah Orman Turu)</option>
+          <option value="11:00" selected>11:00 (Öğle Doğa Turu)</option>
+          <option value="15:30">15:30 (Öğleden Sonra)</option>
+          <option value="17:30">17:30 (Gün Batımı Golden Hour)</option>
         </select>
       </div>
 
       <div style="background:var(--bg-page); padding:1rem; border-radius:var(--radius-sm); margin-bottom:1.25rem; display:flex; justify-content:space-between; align-items:center;">
         <span style="font-weight:600; font-size:0.9rem;">Toplam Tutar:</span>
-        <span style="font-size:1.35rem; font-weight:800; color:var(--primary);" id="safariTotalPrice">3.000 ₺</span>
+        <span style="font-size:1.35rem; font-weight:800; color:var(--primary);" id="safariTotalPrice">0 ₺</span>
       </div>
 
       <button class="btn-gold" style="width:100%; padding:0.85rem;" onclick="confirmSafariBooking()">

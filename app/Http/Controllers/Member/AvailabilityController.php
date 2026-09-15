@@ -28,7 +28,8 @@ class AvailabilityController extends Controller
 
         $date = Carbon::parse($validated['date']);
 
-        if (ClubSetting::get('monday_closed') && $date->isMonday()) {
+        $mondayClosed = filter_var(ClubSetting::get('monday_closed', true), FILTER_VALIDATE_BOOLEAN);
+        if ($mondayClosed && $date->isMonday()) {
             return response()->json(['closed' => true, 'reason' => 'Pazartesi günleri kulüp kapalıdır.', 'trainers' => []]);
         }
 
@@ -54,12 +55,16 @@ class AvailabilityController extends Controller
             ->groupBy('trainer_id')
             ->map(fn ($rows) => $rows->pluck('time')->map(fn ($t) => substr($t, 0, 5))->all());
 
-        $result = $trainers->map(function (Trainer $trainer) use ($busyTimes, $offTimes) {
+        $isToday = $date->isToday();
+        $currentTime = now()->format('H:i');
+
+        $result = $trainers->map(function (Trainer $trainer) use ($busyTimes, $offTimes, $isToday, $currentTime) {
             $busy = $busyTimes->get($trainer->id, []);
             $off = $offTimes->get($trainer->id, []);
 
-            $slots = collect(self::DEFAULT_TIMES)->map(function (string $time) use ($busy, $off) {
-                $status = in_array($time, $off, true) ? 'off' : (in_array($time, $busy, true) ? 'busy' : 'available');
+            $slots = collect(self::DEFAULT_TIMES)->map(function (string $time) use ($busy, $off, $isToday, $currentTime) {
+                $isPast = $isToday && $time <= $currentTime;
+                $status = $isPast ? 'off' : (in_array($time, $off, true) ? 'off' : (in_array($time, $busy, true) ? 'busy' : 'available'));
 
                 return ['time' => $time, 'status' => $status];
             });
