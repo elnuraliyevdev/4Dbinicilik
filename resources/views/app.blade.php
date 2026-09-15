@@ -296,10 +296,10 @@
 
         <div class="user-pill" onclick="switchView('profile')" style="cursor: pointer;">
           <div class="user-info">
-            <span class="user-name" id="navUserName">Demo Üye</span>
-            <span class="user-ref" id="navUserRef">Ref: 087798</span>
+            <span class="user-name" id="navUserName">—</span>
+            <span class="user-ref" id="navUserRef">—</span>
           </div>
-          <div class="user-avatar" id="navUserAvatar">E</div>
+          <div class="user-avatar" id="navUserAvatar">👤</div>
         </div>
 
         <button class="btn-outline" style="padding:0.4rem 0.75rem; font-size:0.8rem; border-color:#EF4444; color:#EF4444; border-radius:var(--radius-sm);" onclick="logoutToGateway()" title="Oturumu Kapat">
@@ -336,7 +336,7 @@
         <div class="stat-card primary">
           <div class="stat-data">
             <span class="stat-label">Toplam Ders</span>
-            <span class="stat-value" id="statTotal">12</span>
+            <span class="stat-value" id="statTotal">—</span>
           </div>
           <div class="stat-icon-wrapper">🏇</div>
         </div>
@@ -344,7 +344,7 @@
         <div class="stat-card warning">
           <div class="stat-data">
             <span class="stat-label">Kullanılan</span>
-            <span class="stat-value" id="statUsed">4</span>
+            <span class="stat-value" id="statUsed">—</span>
           </div>
           <div class="stat-icon-wrapper">✅</div>
         </div>
@@ -352,7 +352,7 @@
         <div class="stat-card gold">
           <div class="stat-data">
             <span class="stat-label">Kalan Ders</span>
-            <span class="stat-value" id="statRemaining">7</span>
+            <span class="stat-value" id="statRemaining">—</span>
           </div>
           <div class="stat-icon-wrapper">⏳</div>
         </div>
@@ -360,7 +360,7 @@
         <div class="stat-card success">
           <div class="stat-data">
             <span class="stat-label">Bekleyen Ders</span>
-            <span class="stat-value" id="statPending">1</span>
+            <span class="stat-value" id="statPending">—</span>
           </div>
           <div class="stat-icon-wrapper">📅</div>
         </div>
@@ -659,12 +659,12 @@
         </div>
 
         <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; padding-bottom:1.5rem; border-bottom:1px solid var(--border-light);">
-          <div id="profileAvatar" style="width:64px; height:64px; border-radius:50%; background:var(--gold-gradient); color:var(--primary-dark); font-size:1.75rem; font-weight:800; display:flex; align-items:center; justify-content:center;">Ö</div>
+          <div id="profileAvatar" style="width:64px; height:64px; border-radius:50%; background:var(--gold-gradient); color:var(--primary-dark); font-size:1.75rem; font-weight:800; display:flex; align-items:center; justify-content:center;">—</div>
           <div>
-            <h3 id="profileName" style="font-family:var(--font-serif); font-size:1.25rem;">Ahmet Yönetici (Demo Admin)</h3>
-            <p id="profileEmail" style="color:var(--text-muted); font-size:0.85rem;">admin.demo@example.com</p>
+            <h3 id="profileName" style="font-family:var(--font-serif); font-size:1.25rem;">—</h3>
+            <p id="profileEmail" style="color:var(--text-muted); font-size:0.85rem;">—</p>
             <span id="profileRefBadge" style="display:inline-block; margin-top:0.35rem; background:rgba(197,160,89,0.15); color:var(--gold-dark); padding:0.2rem 0.6rem; border-radius:var(--radius-full); font-size:0.75rem; font-weight:700;">
-              Referans Kodun: ANGORA-ADMIN
+              Referans Kodun: —
             </span>
           </div>
         </div>
@@ -681,12 +681,12 @@
           <div style="margin-top:1.5rem; display:flex; justify-content:space-between; align-items:flex-end;">
             <div>
               <div style="font-size:0.7rem; color:rgba(255,255,255,0.7);">ÜYE ADI & REF NO</div>
-              <div style="font-weight:700; font-size:1rem;" id="cardHolderName">Demo Üye</div>
-              <div style="font-family:monospace; font-size:0.8rem; color:var(--gold-light);" id="cardRefCode">REF: 087798</div>
+              <div style="font-weight:700; font-size:1rem;" id="cardHolderName">—</div>
+              <div style="font-family:monospace; font-size:0.8rem; color:var(--gold-light);" id="cardRefCode">REF: —</div>
             </div>
             <div style="text-align:right;">
               <div style="font-size:0.7rem; color:rgba(255,255,255,0.7);">KALAN BAKİYE</div>
-              <div style="font-weight:800; font-size:1.25rem; color:var(--gold);" id="cardRemainingCredits">30 Ders</div>
+              <div style="font-weight:800; font-size:1.25rem; color:var(--gold);" id="cardRemainingCredits">—</div>
             </div>
           </div>
           <div style="margin-top:1rem; padding-top:0.75rem; border-top:1px dashed rgba(255,255,255,0.2); display:flex; justify-content:flex-end; align-items:center; font-size:0.75rem; color:rgba(255,255,255,0.8);">
@@ -696,20 +696,17 @@
 
         <div class="form-group">
           <label class="form-label">Aktif Üyelik / Rol</label>
-          <input type="text" id="profileRolePackage" class="form-control" value="👑 Yönetici & VIP Tesis Üyeliği" readonly>
+          <input type="text" id="profileRolePackage" class="form-control" value="—" readonly>
         </div>
 
         <div class="form-group">
-          <label class="form-label">Acil Durum İletişim</label>
-          <input type="text" class="form-control" value="+90 500 000 00 01">
+          <label class="form-label">Kayıtlı İletişim Numarası</label>
+          <input type="text" id="profilePhone" class="form-control" value="—" readonly>
         </div>
 
         <div style="display:flex; gap:0.5rem; margin-top:1rem;">
-          <button class="btn-primary" style="flex:1;" onclick="showToast('✓ Profil bilgileriniz güncellendi!')">
-            Bilgileri Kaydet
-          </button>
-          <button class="btn-outline" style="border-color:#EF4444; color:#EF4444;" onclick="logoutToGateway()">
-            Hesap Değiştir
+          <button class="btn-outline" style="border-color:#EF4444; color:#EF4444; width:100%;" onclick="logoutToGateway()">
+            🚪 Oturumu Kapat / Hesap Değiştir
           </button>
         </div>
       </div>
@@ -1136,7 +1133,7 @@
               <h2 style="font-family:var(--font-serif); font-size:1.75rem; color:var(--primary-dark); margin:0;" id="trainerPortalTitle">
                 🎯 EĞİTMEN DERS & YOKLAMA PANELİ
               </h2>
-              <span class="admin-badge" id="trainerPortalBadge">Baş Antrenör: Kağan Doruk</span>
+              <span class="admin-badge" id="trainerPortalBadge">Eğitmen Masası</span>
             </div>
             <p style="font-size:0.85rem; color:var(--text-muted); margin:0.25rem 0 0 0;">
               Bugünkü biniş dersleriniz, öğrenci maneji programı ve anlık yoklama bildirim masası.
@@ -1155,7 +1152,7 @@
             <div class="card-title">
               <span>🏇</span> Bugün Planlanan Seanslarım
             </div>
-            <span class="sec-badge info" id="trainerLessonsCount">Toplam 11 Ders</span>
+            <span class="sec-badge info" id="trainerLessonsCount">—</span>
           </div>
           <div id="trainerRosterList">
             <!-- Populated dynamically -->
@@ -1171,9 +1168,7 @@
           <div class="form-group">
             <label class="form-label">Öğrenci Seç</label>
             <select class="form-control" id="trainerStudentSelect">
-              <option value="Demo Üye">Demo Üye (Manej Seansı)</option>
-              <option value="Kaan Yılmaz">Kaan Yılmaz (İleri Seviye)</option>
-              <option value="Defne Polat">Defne Polat (Denge)</option>
+              <option value="">Öğrenci listesi yükleniyor…</option>
             </select>
           </div>
           <div class="form-group">

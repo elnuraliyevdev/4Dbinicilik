@@ -779,6 +779,15 @@ function renderUserProfile() {
 
   const badgeEl = document.getElementById('profileRefBadge');
   if (badgeEl) badgeEl.innerText = `Referans Kodun: ${u.ref_code || '—'}`;
+
+  const roleText = u.role === 'admin' 
+    ? '👑 Kulüp Yöneticisi' 
+    : (u.active_package?.name ? `🏇 ${u.active_package.name}` : '👤 Kulüp Üyesi');
+  const roleInput = document.getElementById('profileRolePackage');
+  if (roleInput) roleInput.value = roleText;
+
+  const phoneInput = document.getElementById('profilePhone');
+  if (phoneInput) phoneInput.value = u.phone || '—';
 }
 
 // ─── TRAINER PORTAL ───────────────────────────────────────────────────────────
