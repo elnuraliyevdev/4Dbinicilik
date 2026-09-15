@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -10,6 +11,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable(['name', 'primary_user_id', 'package_total', 'remaining_lessons', 'used_lessons', 'reserved_lessons'])]
 class Family extends Model
 {
+    use HasFactory;
+
     public function primaryUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'primary_user_id');

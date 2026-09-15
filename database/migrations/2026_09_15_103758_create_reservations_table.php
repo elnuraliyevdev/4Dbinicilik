@@ -14,11 +14,12 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('trainer_id')->nullable()->constrained('trainers')->nullOnDelete();
             $table->foreignId('horse_id')->nullable()->constrained('horses')->nullOnDelete();
+            $table->foreignId('safari_tour_id')->nullable()->constrained('safari_tours')->nullOnDelete();
             $table->enum('type', ['lesson', 'safari']);
             $table->string('activity_label');
             $table->date('date');
             $table->time('time');
-            $table->enum('status', ['confirmed', 'completed', 'no_show', 'late_cancelled'])->default('confirmed');
+            $table->enum('status', ['confirmed', 'completed', 'cancelled', 'no_show', 'late_cancelled'])->default('confirmed');
             $table->unsignedInteger('participants')->nullable();
             $table->decimal('price_try', 10, 2)->nullable();
             $table->enum('source', ['member', 'admin', 'trainer'])->default('member');
