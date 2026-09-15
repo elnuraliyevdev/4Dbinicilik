@@ -530,6 +530,8 @@ function renderTrainerMatrix(data) {
     .join('');
 }
 
+let cachedHorses = null;
+
 function quickBookSlot(trainerId, trainerName, date, time) {
   selectedTrainerId = trainerId;
   selectedTrainerName = trainerName;
@@ -537,7 +539,26 @@ function quickBookSlot(trainerId, trainerName, date, time) {
   selectedSlot = time;
   document.getElementById('bookingModalTrainer').value = trainerName;
   document.getElementById('bookingModalDate').innerText = `${date} saat ${time}`;
+  populateHorseOptions();
   openModal('quickBookingModal');
+}
+
+async function populateHorseOptions() {
+  const select = document.getElementById('quickModalHorse');
+  if (!select) return;
+
+  if (!cachedHorses) {
+    try {
+      cachedHorses = (await API.get('/member/horses')).horses || [];
+    } catch (e) {
+      cachedHorses = [];
+    }
+  }
+
+  const placeholder = '<option value="">🐴 Kulüp Tarafından Belirlensin (Önerilen)</option>';
+  select.innerHTML =
+    placeholder +
+    cachedHorses.map((h) => `<option value="${h.id}">${escapeHtml(h.name)}${h.breed ? ' (' + escapeHtml(h.breed) + ')' : ''}</option>`).join('');
 }
 
 async function confirmLessonBooking() {
@@ -751,6 +772,7 @@ function renderUserProfile() {
   set('cardHolderName', safeName);
   set('cardRefCode', `REF: ${u.ref_code || '—'}`);
   set('cardRemainingCredits', `${u.remaining_lessons || 0} Ders`);
+  set('cardPackageExpiry', u.package_expires_at ? new Date(u.package_expires_at).toLocaleDateString('tr-TR') : 'Aktif paket yok');
   set('navUserName', safeName.split(' ')[0] || safeName);
   set('navUserRef', u.role === 'admin' ? '👑 Admin' : `Ref: ${u.ref_code || '—'}`);
   set('navUserAvatar', initial);

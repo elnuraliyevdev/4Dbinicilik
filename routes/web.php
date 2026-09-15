@@ -13,6 +13,7 @@ use App\Http\Controllers\Auth\ClaimAccountController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\SessionController;
 use App\Http\Controllers\Member\AvailabilityController;
+use App\Http\Controllers\Member\HorseController;
 use App\Http\Controllers\Member\PackageController;
 use App\Http\Controllers\Member\ReservationController;
 use App\Http\Controllers\Member\SafariController;
@@ -44,6 +45,7 @@ Route::middleware('signed')->prefix('claim-account')->group(function () {
 
 Route::middleware(['auth', 'role:member|admin'])->prefix('member')->group(function () {
     Route::get('/availability', [AvailabilityController::class, 'index'])->name('member.availability');
+    Route::get('/horses', [HorseController::class, 'index'])->name('member.horses');
 
     Route::get('/reservations', [ReservationController::class, 'index'])->name('member.reservations.index');
     Route::post('/reservations', [ReservationController::class, 'store'])->name('member.reservations.store');

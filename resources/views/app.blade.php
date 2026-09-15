@@ -643,33 +643,9 @@
         <div class="card-header">
           <div class="card-title"><span>📜</span> Rezervasyon Geçmişi</div>
         </div>
-        <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
-          <thead>
-            <tr style="border-bottom:2px solid var(--border); text-align:left; color:var(--text-muted);">
-              <th style="padding:0.75rem 0.5rem;">Kod</th>
-              <th style="padding:0.75rem 0.5rem;">Tür</th>
-              <th style="padding:0.75rem 0.5rem;">Tarih / Saat</th>
-              <th style="padding:0.75rem 0.5rem;">Antrenör</th>
-              <th style="padding:0.75rem 0.5rem;">Durum</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr style="border-bottom:1px solid var(--border-light);">
-              <td style="padding:0.75rem 0.5rem; font-weight:700;">RES-101</td>
-              <td style="padding:0.75rem 0.5rem;">🏇 Bireysel Ders</td>
-              <td style="padding:0.75rem 0.5rem;">02 Eyl 2026, 15:00</td>
-              <td style="padding:0.75rem 0.5rem;">Ahmet Hoca</td>
-              <td style="padding:0.75rem 0.5rem;"><span class="lesson-badge badge-approved">Onaylandı</span></td>
-            </tr>
-            <tr style="border-bottom:1px solid var(--border-light);">
-              <td style="padding:0.75rem 0.5rem; font-weight:700;">RES-098</td>
-              <td style="padding:0.75rem 0.5rem;">🏇 Bireysel Ders</td>
-              <td style="padding:0.75rem 0.5rem;">28 Ağu 2026, 16:00</td>
-              <td style="padding:0.75rem 0.5rem;">Selin Hoca</td>
-              <td style="padding:0.75rem 0.5rem;"><span class="lesson-badge badge-approved">Tamamlandı</span></td>
-            </tr>
-          </tbody>
-        </table>
+        <div id="historyList">
+          <!-- Populated by app.js -->
+        </div>
       </div>
     </section>
 
@@ -713,9 +689,8 @@
               <div style="font-weight:800; font-size:1.25rem; color:var(--gold);" id="cardRemainingCredits">30 Ders</div>
             </div>
           </div>
-          <div style="margin-top:1rem; padding-top:0.75rem; border-top:1px dashed rgba(255,255,255,0.2); display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:rgba(255,255,255,0.8);">
-            <span>Turnike & Manej Girişi: <b>TEMASSIZ AKTİF</b></span>
-            <span>Son Geçerlilik: <b>31.12.2026</b></span>
+          <div style="margin-top:1rem; padding-top:0.75rem; border-top:1px dashed rgba(255,255,255,0.2); display:flex; justify-content:flex-end; align-items:center; font-size:0.75rem; color:rgba(255,255,255,0.8);">
+            <span>Son Geçerlilik: <b id="cardPackageExpiry">—</b></span>
           </div>
         </div>
 
@@ -1256,10 +1231,6 @@
         <label class="form-label">At Tercihi</label>
         <select class="form-control" id="quickModalHorse">
           <option value="">🐴 Kulüp Tarafından Belirlensin (Önerilen)</option>
-          <option value="1">Rüzgar (Arap Atı)</option>
-          <option value="2">Fırtına (İngiliz)</option>
-          <option value="3">Poyraz (Haflinger)</option>
-          <option value="4">Şimşek (Friesian)</option>
         </select>
       </div>
 
