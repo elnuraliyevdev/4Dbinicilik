@@ -134,7 +134,10 @@ class LoginController extends Controller
             ]);
         }
 
-        return response()->json(['message' => 'Oturum kapatıldı.']);
+        return response()->json([
+            'message' => 'Oturum kapatıldı.',
+            'csrf_token' => csrf_token(),
+        ]);
     }
 
     private function throttleKey(string $flow, Request $request, string $identifier): string
@@ -194,6 +197,7 @@ class LoginController extends Controller
 
         return response()->json([
             'message' => 'Giriş başarılı.',
+            'csrf_token' => csrf_token(),
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,

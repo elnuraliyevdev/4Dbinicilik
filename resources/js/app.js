@@ -36,6 +36,11 @@ const API = {
       /* empty body, e.g. some 204s */
     }
 
+    if (data && data.csrf_token) {
+      const meta = document.querySelector('meta[name="csrf-token"]');
+      if (meta) meta.content = data.csrf_token;
+    }
+
     if (!res.ok) {
       const err = new Error(data?.message || 'İstek başarısız oldu.');
       err.status = res.status;
