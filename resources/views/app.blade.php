@@ -312,33 +312,6 @@
   <!-- MAIN CONTAINER -->
   <main class="app-container">
 
-    <!-- LIVE MANEGE & WEATHER CONDITIONS BANNER -->
-    <div style="background:linear-gradient(135deg, rgba(27,59,47,0.06) 0%, rgba(197,160,89,0.12) 100%); border:1px solid rgba(197,160,89,0.35); border-radius:var(--radius-md); padding:0.85rem 1.25rem; margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
-      <div style="display:flex; align-items:center; gap:0.85rem;">
-        <div style="width:40px; height:40px; border-radius:10px; background:var(--gold-gradient); display:flex; align-items:center; justify-content:center; font-size:1.35rem; box-shadow:0 4px 12px rgba(197,160,89,0.3);">
-          ☀️
-        </div>
-        <div>
-          <div style="font-weight:700; font-size:0.9rem; color:var(--primary-dark); display:flex; align-items:center; gap:0.4rem;">
-            <span>Manej & Hava Şartları</span>
-            <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#10B981; animation:pulse 2s infinite;"></span>
-            <span style="font-size:0.75rem; color:#059669; font-weight:600;">CANLI</span>
-          </div>
-          <div style="font-size:0.78rem; color:var(--text-muted);">
-            22°C Açık & Güneşli • Rüzgar: 8 km/s • Kum Zemin: <span style="color:#059669; font-weight:600;">Taranmış & Nemli (İdeal)</span>
-          </div>
-        </div>
-      </div>
-      <div style="display:flex; gap:0.6rem; font-size:0.75rem;">
-        <span style="background:#FFFFFF; border:1px solid var(--border); padding:0.25rem 0.6rem; border-radius:var(--radius-full); font-weight:600; color:var(--primary-dark);">
-          🏟️ Açık Manej: <b style="color:#059669;">MÜSAİT</b>
-        </span>
-        <span style="background:#FFFFFF; border:1px solid var(--border); padding:0.25rem 0.6rem; border-radius:var(--radius-full); font-weight:600; color:var(--primary-dark);">
-          🏠 Kapalı Manej: <b style="color:#059669;">AKTİF</b>
-        </span>
-      </div>
-    </div>
-
     <!-- RULE BANNER -->
     <div class="rule-banner">
       <div class="rule-content">
@@ -746,46 +719,6 @@
           </div>
         </div>
 
-        <!-- Equestrian Progression & Level Badges -->
-        <div style="background:#FFFFFF; border:1px solid var(--border); border-radius:var(--radius-md); padding:1.25rem; margin-bottom:1.25rem;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
-            <div style="font-weight:700; font-size:0.95rem; color:var(--primary-dark); display:flex; align-items:center; gap:0.4rem;">
-              <span>🏅</span> Binicilik Seviye & Lisans İlerlemesi
-            </div>
-            <span style="font-size:0.75rem; background:rgba(197,160,89,0.15); color:var(--gold-dark); padding:0.2rem 0.6rem; border-radius:var(--radius-full); font-weight:700;">
-              🥈 Gümüş Nal Binicisi
-            </span>
-          </div>
-
-          <div style="margin-bottom:0.85rem;">
-            <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted); margin-bottom:0.35rem;">
-              <span>Altın Nal & Dresaj Seviyesine Kalan: <b>6 Ders</b></span>
-              <span>14 / 20 Seans (%70)</span>
-            </div>
-            <div style="width:100%; height:8px; background:rgba(27,59,47,0.1); border-radius:var(--radius-full); overflow:hidden;">
-              <div style="width:70%; height:100%; background:var(--gold-gradient); border-radius:var(--radius-full);"></div>
-            </div>
-          </div>
-
-          <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:0.5rem; text-align:center;">
-            <div style="background:rgba(27,59,47,0.04); border:1px solid var(--border-light); border-radius:var(--radius-sm); padding:0.5rem 0.25rem;">
-              <div style="font-size:1.25rem;">🥉</div>
-              <div style="font-weight:700; font-size:0.75rem; color:var(--primary-dark);">Bronz Nal</div>
-              <div style="font-size:0.65rem; color:#059669; font-weight:600;">✓ Tamamlandı</div>
-            </div>
-            <div style="background:rgba(197,160,89,0.1); border:1px solid var(--gold); border-radius:var(--radius-sm); padding:0.5rem 0.25rem;">
-              <div style="font-size:1.25rem;">🥈</div>
-              <div style="font-weight:700; font-size:0.75rem; color:var(--gold-dark);">Gümüş Nal</div>
-              <div style="font-size:0.65rem; color:var(--gold-dark); font-weight:700;">⏳ Aktif Seviye</div>
-            </div>
-            <div style="background:rgba(0,0,0,0.02); border:1px dashed var(--border); border-radius:var(--radius-sm); padding:0.5rem 0.25rem; opacity:0.6;">
-              <div style="font-size:1.25rem;">🥇</div>
-              <div style="font-weight:700; font-size:0.75rem; color:var(--text-muted);">Altın Nal</div>
-              <div style="font-size:0.65rem; color:var(--text-muted);">🔒 Kilitli</div>
-            </div>
-          </div>
-        </div>
-
         <div class="form-group">
           <label class="form-label">Aktif Üyelik / Rol</label>
           <input type="text" id="profileRolePackage" class="form-control" value="👑 Yönetici & VIP Tesis Üyeliği" readonly>
@@ -897,7 +830,6 @@
         </div>
 
         <!-- Daily Attendance Feed -->
-        <!-- Daily Attendance Feed -->
         <div class="card" style="margin-bottom:1.5rem;">
           <div class="card-header">
             <div class="card-title">
@@ -907,109 +839,6 @@
           </div>
           <div id="adminAttendanceFeed">
             <!-- Populated by app.js -->
-          </div>
-        </div>
-
-        <!-- Horse Welfare & Daily Workload Tracker -->
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <div class="card-title">
-                <span>🐎</span> Kulüp Atları — Sağlık & Günlük Manej Yükü
-              </div>
-              <p style="font-size:0.8rem; color:var(--text-muted); margin:0.25rem 0 0 0;">
-                At refahını korumak için günlük maksimum 4 ders/seans limiti uygulanır.
-              </p>
-            </div>
-            <span style="font-size:0.75rem; background:rgba(16,185,129,0.1); color:#059669; padding:0.2rem 0.6rem; border-radius:var(--radius-full); font-weight:700;">
-              ✓ 5/5 At Sağlıklı & Aktif
-            </span>
-          </div>
-
-          <div style="overflow-x:auto;">
-            <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
-              <thead>
-                <tr style="border-bottom:2px solid var(--border); text-align:left; color:var(--text-muted);">
-                  <th style="padding:0.6rem 0.4rem;">At Adı & Irk</th>
-                  <th style="padding:0.6rem 0.4rem;">Uzmanlık / Seviye</th>
-                  <th style="padding:0.6rem 0.4rem;">Bugünkü Ders Yükü</th>
-                  <th style="padding:0.6rem 0.4rem;">Dinlenme Durumu</th>
-                  <th style="padding:0.6rem 0.4rem; text-align:right;">Sağlık Statüsü</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr style="border-bottom:1px solid var(--border-light);">
-                  <td style="padding:0.65rem 0.4rem; font-weight:700; color:var(--primary-dark);">🐎 Poyraz <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(Arap)</span></td>
-                  <td style="padding:0.65rem 0.4rem;"><span class="badge" style="background:rgba(27,59,47,0.08); color:var(--primary-dark);">Lonj & Kenter</span></td>
-                  <td style="padding:0.65rem 0.4rem;">
-                    <div style="display:flex; align-items:center; gap:0.5rem;">
-                      <div style="width:80px; height:6px; background:rgba(0,0,0,0.1); border-radius:3px; overflow:hidden;">
-                        <div style="width:50%; height:100%; background:#10B981;"></div>
-                      </div>
-                      <b>2 / 4 Ders</b>
-                    </div>
-                  </td>
-                  <td style="padding:0.65rem 0.4rem; font-size:0.8rem; color:var(--text-muted);">45 dk önce dinlendi</td>
-                  <td style="padding:0.65rem 0.4rem; text-align:right;"><span style="color:#059669; font-weight:700; font-size:0.8rem;">● Müsait</span></td>
-                </tr>
-                <tr style="border-bottom:1px solid var(--border-light);">
-                  <td style="padding:0.65rem 0.4rem; font-weight:700; color:var(--primary-dark);">🐎 Fırtına <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(İngiliz)</span></td>
-                  <td style="padding:0.65rem 0.4rem;"><span class="badge" style="background:rgba(197,160,89,0.15); color:var(--gold-dark);">Engel & İleri</span></td>
-                  <td style="padding:0.65rem 0.4rem;">
-                    <div style="display:flex; align-items:center; gap:0.5rem;">
-                      <div style="width:80px; height:6px; background:rgba(0,0,0,0.1); border-radius:3px; overflow:hidden;">
-                        <div style="width:75%; height:100%; background:#F59E0B;"></div>
-                      </div>
-                      <b>3 / 4 Ders</b>
-                    </div>
-                  </td>
-                  <td style="padding:0.65rem 0.4rem; font-size:0.8rem; color:var(--text-muted);">Son ders 16:00</td>
-                  <td style="padding:0.65rem 0.4rem; text-align:right;"><span style="color:#D97706; font-weight:700; font-size:0.8rem;">● Dinlenmede</span></td>
-                </tr>
-                <tr style="border-bottom:1px solid var(--border-light);">
-                  <td style="padding:0.65rem 0.4rem; font-weight:700; color:var(--primary-dark);">🐎 Şimşek <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(Pony)</span></td>
-                  <td style="padding:0.65rem 0.4rem;"><span class="badge" style="background:rgba(59,130,246,0.1); color:#2563EB;">Çocuk & Başlangıç</span></td>
-                  <td style="padding:0.65rem 0.4rem;">
-                    <div style="display:flex; align-items:center; gap:0.5rem;">
-                      <div style="width:80px; height:6px; background:rgba(0,0,0,0.1); border-radius:3px; overflow:hidden;">
-                        <div style="width:25%; height:100%; background:#10B981;"></div>
-                      </div>
-                      <b>1 / 3 Ders</b>
-                    </div>
-                  </td>
-                  <td style="padding:0.65rem 0.4rem; font-size:0.8rem; color:var(--text-muted);">Hazır</td>
-                  <td style="padding:0.65rem 0.4rem; text-align:right;"><span style="color:#059669; font-weight:700; font-size:0.8rem;">● Müsait</span></td>
-                </tr>
-                <tr style="border-bottom:1px solid var(--border-light);">
-                  <td style="padding:0.65rem 0.4rem; font-weight:700; color:var(--primary-dark);">🐎 Karayel <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(Haflinger)</span></td>
-                  <td style="padding:0.65rem 0.4rem;"><span class="badge" style="background:rgba(27,59,47,0.08); color:var(--primary-dark);">Orman Safarisi</span></td>
-                  <td style="padding:0.65rem 0.4rem;">
-                    <div style="display:flex; align-items:center; gap:0.5rem;">
-                      <div style="width:80px; height:6px; background:rgba(0,0,0,0.1); border-radius:3px; overflow:hidden;">
-                        <div style="width:0%; height:100%; background:#10B981;"></div>
-                      </div>
-                      <b>0 / 4 Ders</b>
-                    </div>
-                  </td>
-                  <td style="padding:0.65rem 0.4rem; font-size:0.8rem; color:var(--text-muted);">Tavla dinlenmesinde</td>
-                  <td style="padding:0.65rem 0.4rem; text-align:right;"><span style="color:#059669; font-weight:700; font-size:0.8rem;">● Müsait</span></td>
-                </tr>
-                <tr>
-                  <td style="padding:0.65rem 0.4rem; font-weight:700; color:var(--primary-dark);">🐎 Asil <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(Warmblood)</span></td>
-                  <td style="padding:0.65rem 0.4rem;"><span class="badge" style="background:rgba(197,160,89,0.15); color:var(--gold-dark);">Dresaj & Lisanslı</span></td>
-                  <td style="padding:0.65rem 0.4rem;">
-                    <div style="display:flex; align-items:center; gap:0.5rem;">
-                      <div style="width:80px; height:6px; background:rgba(0,0,0,0.1); border-radius:3px; overflow:hidden;">
-                        <div style="width:100%; height:100%; background:#EF4444;"></div>
-                      </div>
-                      <b>4 / 4 Ders</b>
-                    </div>
-                  </td>
-                  <td style="padding:0.65rem 0.4rem; font-size:0.8rem; color:var(--text-muted);">Günlük seans tamamlandı</td>
-                  <td style="padding:0.65rem 0.4rem; text-align:right;"><span style="color:#EF4444; font-weight:700; font-size:0.8rem;">● Limit Doldu</span></td>
-                </tr>
-              </tbody>
-            </table>
           </div>
         </div>
 
@@ -1045,8 +874,8 @@
               <button class="btn-outline" style="padding:0.35rem 0.75rem; font-size:0.75rem; border-color:var(--gold); color:var(--gold-dark); font-weight:700;" onclick="adminExportMembersCSV()">
                 📥 Excel / CSV İndir
               </button>
-              <button class="tab-btn active" id="memberTabBtn-club" onclick="filterMemberCategory('club')">Kulüp Üyeleri (155)</button>
-              <button class="tab-btn" id="memberTabBtn-prog" onclick="filterMemberCategory('program')">Program Kayıtlıları (39)</button>
+              <button class="tab-btn active" id="memberTabBtn-club" onclick="filterMemberCategory('club')">Kulüp Üyeleri</button>
+              <button class="tab-btn" id="memberTabBtn-prog" onclick="filterMemberCategory('program')">Program Kayıtlıları</button>
             </div>
           </div>
 
