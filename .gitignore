@@ -52,3 +52,6 @@ Thumbs.db
 /test-results
 /storage/playwright-report
 /playwright/.cache
+
+# Contains real login credentials for manual test accounts — shared out-of-band, never tracked
+/docs/manuel-test-senaryolari/4d-binicilik.md
