@@ -66,7 +66,11 @@ class Reservation extends Model
 
     public function startsAt(): Carbon
     {
-        return Carbon::parse($this->date.' '.$this->time);
+        // $this->date is meant to be a plain 'Y-m-d' string (see the casts()
+        // comment above), but at least one legacy-imported row stored a full
+        // datetime there instead — take just the date part so concatenating
+        // with $this->time below doesn't produce two time specifications.
+        return Carbon::parse(substr($this->date, 0, 10).' '.$this->time);
     }
 
     /**
