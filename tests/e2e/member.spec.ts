@@ -12,7 +12,12 @@ test.describe('Member flow', () => {
     await expect(page.locator('#statRemaining')).toHaveText('10', { timeout: 10_000 });
 
     // --- Go to availability, book the first open slot ---
+    // Tomorrow, not today: today's remaining slots can land inside (or right
+    // at) the 2h cancellation boundary depending on what time the suite
+    // happens to run, which would make the free-cancel step below correctly
+    // get rejected by the server rather than testing what it's meant to.
     await page.getByRole('button', { name: /Eğitmen Takvimine Git/ }).click();
+    await page.getByRole('button', { name: /Yarın/ }).click();
     const firstAvailableSlot = page.locator('.slot-tag.available').first();
     await expect(firstAvailableSlot).toBeVisible({ timeout: 10_000 });
     await firstAvailableSlot.click();
@@ -43,6 +48,7 @@ test.describe('Member flow', () => {
     await expect(pageA.locator('#statRemaining')).toHaveText('10', { timeout: 10_000 });
 
     await pageA.getByRole('button', { name: /Eğitmen Takvimine Git/ }).click();
+    await pageA.getByRole('button', { name: /Yarın/ }).click();
     const slot = pageA.locator('.slot-tag.available').first();
     await expect(slot).toBeVisible({ timeout: 10_000 });
     await slot.click();
@@ -50,10 +56,14 @@ test.describe('Member flow', () => {
     await expect(pageA.locator('#statRemaining')).toHaveText('9', { timeout: 10_000 });
 
     // Same member, second tab — the slot they just took should now read busy.
+    // Nav items are plain divs with an onclick handler, not <a> elements, so
+    // there's no accessible "link" role to click here — go straight to the
+    // same JS dispatcher the real nav button ends up calling.
     const pageB = await contextA.newPage();
     await pageB.goto('/');
-    await pageB.getByRole('link', { name: 'Eğitmen Takvimi' }).click().catch(() => {});
+    await expect(pageB.locator('#statRemaining')).toHaveText('9', { timeout: 10_000 });
     await pageB.evaluate(() => (window as any).switchView?.('availability'));
+    await pageB.getByRole('button', { name: /Yarın/ }).click();
     await expect(pageB.locator('.slot-tag.busy').first()).toBeVisible({ timeout: 10_000 });
 
     // Clean up: cancel the booking we made so the fixture stays reusable.

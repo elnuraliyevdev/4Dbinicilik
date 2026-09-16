@@ -28,6 +28,24 @@ export function todayLocalDateString(): string {
   return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Istanbul' }).format(new Date());
 }
 
+/**
+ * A same-day HH:MM a few minutes from now, in Europe/Istanbul — for booking
+ * "today" without hardcoding a fixed slot that's a coin flip on whether it's
+ * already past depending on what time of day the suite happens to run.
+ */
+export function nearFutureTimeString(minutesFromNow = 5): string {
+  const future = new Date(Date.now() + minutesFromNow * 60_000);
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/Istanbul',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).formatToParts(future);
+  const hour = parts.find((p) => p.type === 'hour')?.value ?? '00';
+  const minute = parts.find((p) => p.type === 'minute')?.value ?? '00';
+  return `${hour}:${minute}`;
+}
+
 // Every test starts from the exact same known-clean fixture state —
 // regardless of whether the previous test in this run passed, failed, or
 // left a half-finished booking behind. Cheap (no migrate:fresh) but

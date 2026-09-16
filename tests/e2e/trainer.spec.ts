@@ -1,4 +1,4 @@
-import { test, expect, MEMBER_PHONE, TRAINER_PIN, PASSWORD, todayLocalDateString } from './fixtures';
+import { test, expect, MEMBER_PHONE, TRAINER_PIN, PASSWORD, todayLocalDateString, nearFutureTimeString } from './fixtures';
 
 test.describe('Trainer flow', () => {
   test('PIN login → see today\'s roster → mark attendance → add feedback note', async ({ page, request, baseURL }) => {
@@ -23,9 +23,12 @@ test.describe('Trainer flow', () => {
     token = (await loginRes.json()).csrf_token;
 
     const today = todayLocalDateString();
+    // A fixed '11:00' is a coin flip on whether the suite happens to run
+    // before or after 11am — the server correctly rejects a same-day booking
+    // for a time already past. A few minutes from "now" is always valid.
     const bookRes = await request.post('/member/reservations', {
       headers: { 'X-CSRF-TOKEN': token, Accept: 'application/json' },
-      data: { trainer_id: trainer.id, date: today, time: '11:00' },
+      data: { trainer_id: trainer.id, date: today, time: nearFutureTimeString() },
     });
     // Tolerate "slot already taken" from a prior run — the schedule check below
     // only needs *some* confirmed reservation with this trainer today.

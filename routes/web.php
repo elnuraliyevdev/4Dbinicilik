@@ -25,7 +25,16 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('app');
-});
+})->name('login');
+// This SPA has no server-rendered login page — the gateway lives at '/' and
+// shows itself whenever there's no session. But Laravel's default auth
+// middleware still redirects an unauthenticated *non-JSON* request to
+// route('login') by name, and with no route registered under that name, that
+// redirect itself throws (RouteNotFoundException), turning what should be a
+// clean redirect into a 500 HTML crash. Naming this route 'login' gives it
+// somewhere valid to go — every real request from the frontend already sends
+// Accept: application/json and gets a clean 401 instead, this only matters
+// for the non-JSON edge case.
 
 Route::get('/me', [SessionController::class, 'me'])->name('session.me');
 Route::get('/trainer-options', [SessionController::class, 'trainerOptions'])->name('session.trainer-options');

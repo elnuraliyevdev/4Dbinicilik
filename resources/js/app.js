@@ -878,9 +878,13 @@ function renderTrainerRoster() {
 function populateTrainerStudentSelect() {
   const select = document.getElementById('trainerStudentSelect');
   if (!select) return;
-  const confirmed = cachedTrainerReservations.filter((r) => r.status === 'confirmed');
-  select.innerHTML = confirmed.length
-    ? confirmed.map((r) => `<option value="${r.user?.id ?? ''}" data-reservation="${r.id}">${escapeHtml(r.user?.name || 'Silinmiş Üye')}</option>`).join('')
+  // Not just 'confirmed' — a trainer marking a lesson completed/no_show is
+  // exactly when they're most likely to want to leave a note about it, and
+  // that status change (via trainerMarkAttendance -> loadTrainerSchedule)
+  // used to make the student vanish from this list right as they clicked in.
+  const students = cachedTrainerReservations.filter((r) => ['confirmed', 'completed', 'no_show'].includes(r.status));
+  select.innerHTML = students.length
+    ? students.map((r) => `<option value="${r.user?.id ?? ''}" data-reservation="${r.id}">${escapeHtml(r.user?.name || 'Silinmiş Üye')}</option>`).join('')
     : '<option value="">Bugün ders alan öğrenci yok</option>';
 }
 
