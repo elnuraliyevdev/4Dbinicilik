@@ -35,6 +35,8 @@ class E2ETestSeeder extends Seeder
 
     public const PACKAGE_TEST_MEMBER_PHONE = '+90 500 000 09 12';
 
+    public const CONCURRENCY_TEST_MEMBER_PHONE = '+90 500 000 09 13';
+
     public function run(): void
     {
         if (! app()->environment(['local', 'testing'])) {
@@ -121,6 +123,23 @@ class E2ETestSeeder extends Seeder
             ]
         );
         $packageTestMember->assignRole('member');
+
+        // Its own dedicated identifier too — shared credit-mutating fixtures
+        // are exactly the class of bug this session kept re-discovering
+        // (auth.spec.ts's lockout test, admin.spec.ts's package approval,
+        // admin-members.spec.ts's credit grant all needed their own). The
+        // concurrency test grants and spends its own credit mid-run, so it
+        // gets a clean identity nothing else touches.
+        $concurrencyTestMember = $this->upsertUser(
+            ['phone' => self::CONCURRENCY_TEST_MEMBER_PHONE],
+            [
+                'name' => 'E2E Concurrency Test Member',
+                'role' => 'member',
+                'password' => Hash::make(self::PASSWORD),
+                'remaining_lessons' => 0,
+            ]
+        );
+        $concurrencyTestMember->assignRole('member');
 
         // Its own dedicated identifier, never shared with MEMBER_PHONE — the
         // lockout regression test deliberately drives this account's rate

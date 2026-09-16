@@ -41,6 +41,7 @@ class E2EResetCommand extends Command
         // runs, or effects would accumulate across repeated suite executions.
         $this->resetMemberCredits('E2E Member', 10);
         $this->resetMemberCredits('E2E Package Test Member', 0);
+        $this->resetMemberCredits('E2E Concurrency Test Member', 0);
 
         $trainerUser = User::query()->where('name', 'E2E Trainer')->first();
         $trainer = $trainerUser ? Trainer::query()->where('user_id', $trainerUser->id)->first() : null;
