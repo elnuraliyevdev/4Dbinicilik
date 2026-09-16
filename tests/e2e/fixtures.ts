@@ -8,6 +8,7 @@ export const ADMIN_PIN = '4242';
 export const PASSWORD = 'E2eTestPass123!';
 export const UNCLAIMED_MEMBER_PHONE = '+90 500 000 09 10';
 export const LOCKOUT_TEST_MEMBER_PHONE = '+90 500 000 09 11';
+export const PACKAGE_TEST_MEMBER_PHONE = '+90 500 000 09 12';
 export const INACTIVE_TRAINER_PIN = '4242';
 
 // Playwright always runs with cwd set to the config file's directory (the

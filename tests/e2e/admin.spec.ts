@@ -1,4 +1,4 @@
-import { test, expect, MEMBER_PHONE, ADMIN_EMAIL, ADMIN_PIN, PASSWORD } from './fixtures';
+import { test, expect, MEMBER_PHONE, PACKAGE_TEST_MEMBER_PHONE, ADMIN_EMAIL, ADMIN_PIN, PASSWORD } from './fixtures';
 
 test.describe('Admin flow', () => {
   test('2FA login → dashboard stats → approve a package request → member credit increases', async ({ page, request }) => {
@@ -7,11 +7,13 @@ test.describe('Admin flow', () => {
       return html.match(/name="csrf-token" content="([^"]+)"/)?.[1] ?? '';
     };
 
-    // --- Precondition via API: E2E member requests the 4-lesson package ---
+    // Its own dedicated fixture identity, not the shared MEMBER_PHONE account
+    // — this test grants a real +4 lesson credit, which must never leak into
+    // member.spec.ts's exact-starting-balance assertions.
     let token = await csrfMeta();
     const loginRes = await request.post('/login/member', {
       headers: { 'X-CSRF-TOKEN': token, Accept: 'application/json' },
-      data: { identifier: MEMBER_PHONE, password: PASSWORD },
+      data: { identifier: PACKAGE_TEST_MEMBER_PHONE, password: PASSWORD },
     });
     // Login regenerates the session (and thus the CSRF token) — switch to the
     // fresh one the login response hands back before making further POSTs.
@@ -43,15 +45,15 @@ test.describe('Admin flow', () => {
 
     // --- Approve the pending package request ---
     await page.locator('#adminTabBtn-notifications').click();
-    await expect(page.locator('#adminPurchaseRequestsList')).toContainText('E2E Member', { timeout: 10_000 });
+    await expect(page.locator('#adminPurchaseRequestsList')).toContainText('E2E Package Test Member', { timeout: 10_000 });
     await page.getByRole('button', { name: '✅ Onayla' }).first().click();
-    await expect(page.locator('#adminPurchaseRequestsList')).not.toContainText('E2E Member', { timeout: 10_000 });
+    await expect(page.locator('#adminPurchaseRequestsList')).not.toContainText('E2E Package Test Member', { timeout: 10_000 });
 
     // --- Confirm the member's balance actually increased by the package size ---
     // Uses page.request (shares the admin-authenticated browser context's
     // cookies) — the standalone `request` fixture logged itself out earlier.
-    const after = await (await page.request.get('/admin/members?search=E2E+Member')).json();
-    const member = after.members.data.find((m: any) => m.name === 'E2E Member');
+    const after = await (await page.request.get('/admin/members?search=E2E+Package+Test+Member')).json();
+    const member = after.members.data.find((m: any) => m.name === 'E2E Package Test Member');
     expect(member.remaining_lessons).toBe(balanceBefore + fourLesson.lesson_count);
   });
 

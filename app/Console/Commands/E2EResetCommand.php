@@ -35,25 +35,15 @@ class E2EResetCommand extends Command
 
         Artisan::call('db:seed', ['--class' => 'Database\\Seeders\\E2ETestSeeder', '--force' => true]);
 
-        $member = User::query()->where('name', 'E2E Member')->first();
+        // Each has its own dedicated identifier (see E2ETestSeeder) precisely
+        // so no single test's mutations of one leak into another's exact-
+        // balance assertions — but each still needs its own reset here between
+        // runs, or effects would accumulate across repeated suite executions.
+        $this->resetMemberCredits('E2E Member', 10);
+        $this->resetMemberCredits('E2E Package Test Member', 0);
+
         $trainerUser = User::query()->where('name', 'E2E Trainer')->first();
         $trainer = $trainerUser ? Trainer::query()->where('user_id', $trainerUser->id)->first() : null;
-
-        if ($member) {
-            $reservationIds = Reservation::query()->where('user_id', $member->id)->pluck('id');
-            CreditTransaction::query()->whereIn('reference_id', $reservationIds)
-                ->where('reference_type', Reservation::class)->delete();
-            TrainerSlot::query()->whereIn('reservation_id', $reservationIds)
-                ->update(['status' => 'available', 'reservation_id' => null]);
-            Reservation::query()->where('user_id', $member->id)->delete();
-            PackagePurchaseRequest::query()->where('user_id', $member->id)->delete();
-
-            $member->update([
-                'total_lessons' => 10, 'used_lessons' => 0,
-                'remaining_lessons' => 10, 'pending_lessons' => 0,
-                'active_package_id' => null,
-            ]);
-        }
 
         if ($trainer) {
             TrainerFeedbackNote::query()->where('trainer_id', $trainer->id)->delete();
@@ -80,5 +70,27 @@ class E2EResetCommand extends Command
         $this->info('E2E fixtures reset.');
 
         return self::SUCCESS;
+    }
+
+    private function resetMemberCredits(string $name, int $baselineLessons): void
+    {
+        $member = User::query()->where('name', $name)->first();
+        if (! $member) {
+            return;
+        }
+
+        $reservationIds = Reservation::query()->where('user_id', $member->id)->pluck('id');
+        CreditTransaction::query()->whereIn('reference_id', $reservationIds)
+            ->where('reference_type', Reservation::class)->delete();
+        TrainerSlot::query()->whereIn('reservation_id', $reservationIds)
+            ->update(['status' => 'available', 'reservation_id' => null]);
+        Reservation::query()->where('user_id', $member->id)->delete();
+        PackagePurchaseRequest::query()->where('user_id', $member->id)->delete();
+
+        $member->update([
+            'total_lessons' => $baselineLessons, 'used_lessons' => 0,
+            'remaining_lessons' => $baselineLessons, 'pending_lessons' => 0,
+            'active_package_id' => null,
+        ]);
     }
 }

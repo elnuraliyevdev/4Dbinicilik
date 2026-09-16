@@ -33,6 +33,8 @@ class E2ETestSeeder extends Seeder
 
     public const LOCKOUT_TEST_MEMBER_PHONE = '+90 500 000 09 11';
 
+    public const PACKAGE_TEST_MEMBER_PHONE = '+90 500 000 09 12';
+
     public function run(): void
     {
         if (! app()->environment(['local', 'testing'])) {
@@ -104,6 +106,21 @@ class E2ETestSeeder extends Seeder
             ]
         );
         $unclaimed->assignRole('member');
+
+        // Its own dedicated identifier — admin.spec.ts's package-approval test
+        // mutates this account's remaining_lessons (a real credit grant), which
+        // must never be observable from member.spec.ts's tests asserting an
+        // exact starting balance against the shared MEMBER_PHONE account.
+        $packageTestMember = $this->upsertUser(
+            ['phone' => self::PACKAGE_TEST_MEMBER_PHONE],
+            [
+                'name' => 'E2E Package Test Member',
+                'role' => 'member',
+                'password' => Hash::make(self::PASSWORD),
+                'remaining_lessons' => 0,
+            ]
+        );
+        $packageTestMember->assignRole('member');
 
         // Its own dedicated identifier, never shared with MEMBER_PHONE — the
         // lockout regression test deliberately drives this account's rate
