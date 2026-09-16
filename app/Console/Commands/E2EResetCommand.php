@@ -11,6 +11,7 @@ use App\Models\TrainerSlot;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Resets just the E2E fixtures to a known-clean state (re-seed + wipe any
@@ -64,6 +65,17 @@ class E2EResetCommand extends Command
         // pattern our specs use — safe to clear in local/testing only.
         TrainerSlot::query()->whereNull('reservation_id')->where('status', 'busy')
             ->update(['status' => 'available']);
+
+        // LoginController's IP+identifier RateLimiter (60s lock after 5 fails)
+        // is a *separate* mechanism from the per-account failed_login_attempts/
+        // locked_until columns reset above — it only clears on a *successful*
+        // login (establishSession()). A test that deliberately drives an
+        // account into that lock (and never successfully logs in afterward,
+        // by design) leaves it live for the full 60s, silently blocking every
+        // other test's login against the same identifier from the same IP
+        // within that window. Full flush is simplest and safe here — this
+        // command already refuses to run outside local/testing.
+        Cache::flush();
 
         $this->info('E2E fixtures reset.');
 

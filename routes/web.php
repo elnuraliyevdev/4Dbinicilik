@@ -39,7 +39,14 @@ Route::get('/', function () {
 Route::get('/me', [SessionController::class, 'me'])->name('session.me');
 Route::get('/trainer-options', [SessionController::class, 'trainerOptions'])->name('session.trainer-options');
 
-Route::middleware('throttle:10,1')->prefix('login')->group(function () {
+// This blanket IP-scoped throttle sits in front of all three login flows
+// combined, on top of the app's own real defenses (per-account lockout after
+// 5 fails, per-role/identifier RateLimiter — see LoginController). At 10/min
+// it's tight enough to bite ordinary concurrent usage: several real members/
+// trainers logging in around the same time from one shared network (a club's
+// own WiFi, a school NAT) share this one bucket per IP. Raised to something
+// that still caps sustained abuse without that false-positive risk.
+Route::middleware('throttle:60,1')->prefix('login')->group(function () {
     Route::post('/member', [LoginController::class, 'member'])->name('login.member');
     Route::post('/trainer', [LoginController::class, 'trainer'])->name('login.trainer');
     Route::post('/admin', [LoginController::class, 'admin'])->name('login.admin');

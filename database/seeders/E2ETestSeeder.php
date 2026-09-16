@@ -31,6 +31,8 @@ class E2ETestSeeder extends Seeder
 
     public const UNCLAIMED_MEMBER_PHONE = '+90 500 000 09 10';
 
+    public const LOCKOUT_TEST_MEMBER_PHONE = '+90 500 000 09 11';
+
     public function run(): void
     {
         if (! app()->environment(['local', 'testing'])) {
@@ -102,6 +104,23 @@ class E2ETestSeeder extends Seeder
             ]
         );
         $unclaimed->assignRole('member');
+
+        // Its own dedicated identifier, never shared with MEMBER_PHONE — the
+        // lockout regression test deliberately drives this account's rate
+        // limiter into a 60s-locked state and (by design) never successfully
+        // logs in afterward to clear it, so no *other* test's login against
+        // the same identifier from the same IP can be collaterally blocked
+        // by it within that window.
+        $lockoutTestMember = $this->upsertUser(
+            ['phone' => self::LOCKOUT_TEST_MEMBER_PHONE],
+            [
+                'name' => 'E2E Lockout Test Member',
+                'role' => 'member',
+                'password' => Hash::make(self::PASSWORD),
+                'remaining_lessons' => 0,
+            ]
+        );
+        $lockoutTestMember->assignRole('member');
 
         Package::query()->updateOrCreate(
             ['lesson_count' => 4],
