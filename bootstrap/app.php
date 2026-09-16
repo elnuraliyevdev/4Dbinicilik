@@ -16,6 +16,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
         ]);
 
+        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
+
         // The claim-account form is a standalone page opened straight from a
         // signed link (no prior page load to seed a CSRF cookie/token for an
         // anonymous visitor) — the URL signature itself is the forgery
