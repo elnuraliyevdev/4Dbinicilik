@@ -175,6 +175,30 @@
 </head>
 <body class="auth-locked">
 
+  <!-- ====================================================================
+       LUXURY OPENING SPLASH & PRELOADER ANIMATION
+       ==================================================================== -->
+  <div class="app-preloader" id="appPreloader" aria-hidden="true">
+    <div class="preloader-content">
+      <div class="preloader-crest-wrapper">
+        <div class="preloader-ring-pulse"></div>
+        <div class="preloader-crest">
+          <span class="preloader-horse-icon">🏇</span>
+        </div>
+      </div>
+      <h2 class="preloader-brand-title">4D Binicilik</h2>
+      <p class="preloader-brand-sub">SPOR KULÜBÜ • PRESTİJ & YÖNETİM SİSTEMİ</p>
+      
+      <div class="preloader-bar-container">
+        <div class="preloader-bar-fill"></div>
+      </div>
+      
+      <div class="preloader-badge">
+        <span>🏆 TBF Akredite Altyapı</span>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Container -->
   <div class="toast-container" id="toastContainer"></div>
 

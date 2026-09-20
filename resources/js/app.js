@@ -1672,8 +1672,27 @@ Object.assign(window, {
   showToast,
 });
 
+// ─── PRELOADER & SPLASH CONTROLLER ───────────────────────────────────────────
+function initPreloader() {
+  const preloader = document.getElementById('appPreloader');
+  if (!preloader) return;
+
+  // Let the splash play for 800ms, then smoothly fade out
+  setTimeout(() => {
+    preloader.classList.add('fade-out');
+    setTimeout(() => {
+      preloader.style.display = 'none';
+      // Trigger cascade entrance
+      document.querySelectorAll('.login-card-container, .main-layout').forEach(el => {
+        el.classList.add('stagger-in');
+      });
+    }, 600);
+  }, 850);
+}
+
 // ─── BOOT ─────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  initPreloader();
   bootstrapSession();
   loadTrainerLoginOptions();
 

@@ -1494,4 +1494,224 @@ body {
   margin-top: 0.2rem;
 }
 
+/* ==========================================================================
+   PRESTIGE OPENING SPLASH & PRELOADER ANIMATION
+   ========================================================================== */
+.app-preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 30%, #FFFFFF 0%, #F7F2EF 65%, #E9ECEF 100%);
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: all;
+}
+
+.app-preloader.fade-out {
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(1.03);
+  pointer-events: none;
+}
+
+.preloader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  animation: preloaderContentPop 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.preloader-crest-wrapper {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.preloader-ring-pulse {
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  border: 2px solid rgba(190, 0, 24, 0.35);
+  animation: ringPulse 1.6s ease-out infinite;
+}
+
+.preloader-crest {
+  width: 78px;
+  height: 78px;
+  background: linear-gradient(135deg, #D91A32 0%, #BE0018 100%);
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 30px rgba(190, 0, 24, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  animation: horseCrestFloat 2s ease-in-out infinite alternate;
+}
+
+.preloader-horse-icon {
+  font-size: 2.8rem;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.25));
+  animation: horseGallop 1.2s ease-in-out infinite;
+  display: inline-block;
+}
+
+.preloader-brand-title {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  letter-spacing: 0.5px;
+  margin-bottom: 0.25rem;
+  animation: letterSpacingExpand 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.preloader-brand-sub {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+.preloader-bar-container {
+  width: 200px;
+  height: 4px;
+  background: rgba(190, 0, 24, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 1.25rem;
+}
+
+.preloader-bar-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #BE0018 0%, #D28200 50%, #BE0018 100%);
+  background-size: 200% 100%;
+  border-radius: 999px;
+  animation: preloaderBarProgress 0.85s cubic-bezier(0.65, 0, 0.35, 1) forwards, goldShimmer 1.5s linear infinite;
+}
+
+.preloader-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.85rem;
+  background: rgba(210, 130, 0, 0.1);
+  border: 1px solid rgba(210, 130, 0, 0.25);
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--gold-dark);
+}
+
+@keyframes preloaderContentPop {
+  0% {
+    opacity: 0;
+    transform: translateY(15px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes ringPulse {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+
+@keyframes horseCrestFloat {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes horseGallop {
+  0%, 100% {
+    transform: rotate(0deg) translateY(0);
+  }
+  50% {
+    transform: rotate(-4deg) translateY(-2px);
+  }
+}
+
+@keyframes letterSpacingExpand {
+  0% {
+    letter-spacing: -1px;
+    opacity: 0.5;
+  }
+  100% {
+    letter-spacing: 0.5px;
+    opacity: 1;
+  }
+}
+
+@keyframes preloaderBarProgress {
+  0% {
+    width: 0%;
+  }
+  60% {
+    width: 75%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+@keyframes goldShimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+/* Page Cascade Entrance */
+.stagger-in {
+  animation: staggerIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.stagger-delay-1 { animation-delay: 0.05s; }
+.stagger-delay-2 { animation-delay: 0.10s; }
+.stagger-delay-3 { animation-delay: 0.15s; }
+.stagger-delay-4 { animation-delay: 0.20s; }
+
+@keyframes staggerIn {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 
