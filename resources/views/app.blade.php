@@ -8,9 +8,9 @@
 
   <!-- PWA Settings -->
   <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#0B1914">
+  <meta name="theme-color" content="#BE0018">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="4D Binicilik">
 
   @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -21,7 +21,7 @@
        ========================================================================== */
     body.auth-locked {
       overflow: hidden !important;
-      background: #0B1914 !important;
+      background: #F7F2EF !important;
       margin: 0;
       padding: 0;
     }
@@ -50,7 +50,7 @@
       inset: 0;
       width: 100vw;
       height: 100vh;
-      background: radial-gradient(circle at 50% 20%, #1A382C 0%, #0D1F17 60%, #060E0A 100%);
+      background: radial-gradient(circle at 50% 20%, #FFF5F5 0%, #F7F2EF 60%, #E9ECEF 100%);
       z-index: 999999;
       display: flex;
       align-items: center;
@@ -65,7 +65,7 @@
       max-width: 460px;
       background: #FFFFFF;
       border-radius: 20px;
-      box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(197, 160, 89, 0.4);
+      box-shadow: 0 30px 60px -12px rgba(190, 0, 24, 0.12), 0 0 0 1px rgba(190, 0, 24, 0.15);
       padding: 2.25rem 2rem;
       position: relative;
       box-sizing: border-box;
@@ -80,27 +80,27 @@
     .login-brand-icon {
       width: 60px;
       height: 60px;
-      background: linear-gradient(135deg, #DFBA73 0%, #C5A059 50%, #9E7B35 100%);
+      background: linear-gradient(135deg, #D91A32 0%, #BE0018 100%);
       border-radius: 16px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       font-size: 2.2rem;
       margin-bottom: 0.65rem;
-      box-shadow: 0 8px 24px rgba(197, 160, 89, 0.35);
+      box-shadow: 0 8px 24px rgba(190, 0, 24, 0.25);
     }
 
     .login-brand-title {
       font-family: 'Playfair Display', Georgia, serif;
       font-size: 1.65rem;
       font-weight: 800;
-      color: #11261E;
+      color: #212529;
       letter-spacing: -0.5px;
     }
 
     .login-brand-subtitle {
       font-size: 0.75rem;
-      color: #5A7067;
+      color: #55555F;
       letter-spacing: 1.5px;
       text-transform: uppercase;
       font-weight: 600;
@@ -109,12 +109,12 @@
 
     .auth-tabs {
       display: flex;
-      background: #F4F7F5;
+      background: #F7F2EF;
       padding: 4px;
       border-radius: 10px;
       margin-bottom: 1.25rem;
       gap: 4px;
-      border: 1px solid #E2E8E5;
+      border: 1px solid #E5E7EB;
     }
 
     .auth-tab-btn {
@@ -124,7 +124,7 @@
       background: none;
       font-size: 0.78rem;
       font-weight: 700;
-      color: #5A7067;
+      color: #55555F;
       border-radius: 8px;
       cursor: pointer;
       transition: all 0.2s ease;
@@ -133,8 +133,8 @@
 
     .auth-tab-btn.active {
       background: #FFFFFF;
-      color: #1B3B2F;
-      box-shadow: 0 2px 6px rgba(27, 59, 47, 0.1);
+      color: #BE0018;
+      box-shadow: 0 2px 6px rgba(190, 0, 24, 0.1);
     }
 
     .demo-account-pill {
@@ -151,14 +151,14 @@
     }
 
     .demo-account-pill:hover {
-      border-color: #C5A059;
-      background: #FFFDF8;
+      border-color: #BE0018;
+      background: #FFF8F8;
       transform: translateY(-1px);
     }
 
     .btn-gold {
-      background: linear-gradient(135deg, #DFBA73 0%, #C5A059 50%, #9E7B35 100%);
-      color: #11261E;
+      background: linear-gradient(135deg, #E59819 0%, #D28200 50%, #B87200 100%);
+      color: #FFFFFF;
       border: none;
       border-radius: 8px;
       font-weight: 700;
@@ -169,7 +169,7 @@
 
     .btn-gold:hover {
       opacity: 0.92;
-      box-shadow: 0 6px 16px rgba(197, 160, 89, 0.35);
+      box-shadow: 0 6px 16px rgba(210, 130, 0, 0.35);
     }
   </style>
 </head>
@@ -675,7 +675,7 @@
         </div>
 
         <!-- Digital Membership Club Pass -->
-        <div style="background:linear-gradient(135deg, #11261E 0%, #1B3B2F 100%); border-radius:var(--radius-md); padding:1.25rem; color:#FFFFFF; margin-bottom:1.25rem; box-shadow:var(--shadow-md); border:1px solid rgba(197,160,89,0.3); position:relative; overflow:hidden;">
+        <div style="background:linear-gradient(135deg, #8A0011 0%, #BE0018 100%); border-radius:var(--radius-md); padding:1.25rem; color:#FFFFFF; margin-bottom:1.25rem; box-shadow:0 8px 24px rgba(190,0,24,0.25); border:1px solid rgba(255,255,255,0.25); position:relative; overflow:hidden;">
           <div style="display:flex; justify-content:space-between; align-items:flex-start;">
             <div>
               <div style="font-size:0.65rem; text-transform:uppercase; letter-spacing:1.5px; color:var(--gold-light); font-weight:700;">ANGORA BİNİCİLİK SPOR KULÜBÜ</div>
